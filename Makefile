@@ -6,7 +6,7 @@
 #    By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/20 16:53:33 by wricky-t          #+#    #+#              #
-#    Updated: 2023/11/08 13:18:08 by wricky-t         ###   ########.fr        #
+#    Updated: 2023/11/10 19:00:19 by wricky-t         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,10 +22,10 @@ SRCS_DIR	:= srcs
 OBJS_DIR	:= objs
 INC_DIR		:= includes
 
-STDAFX		:=	${INC_DIR}/webservlib.h
+STDAFX		:=	${INC_DIR}/irclib.h
 PCH			:=	$(patsubst ${INC_DIR}/%.h, ${OBJS_DIR}/%.gch, ${STDAFX})
 
-SRCS		:= $(wildcard $(SRCS_DIR)/*.cpp)
+SRCS		:= $(shell find ${SRCS_DIR} -name "*.cpp")
 OBJS		:= $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJS_DIR)/%.o)
 DEPS		:= $(OBJS:.o=.d)
 INC			:= -I$(INC_DIR) -include-pch ${PCH}

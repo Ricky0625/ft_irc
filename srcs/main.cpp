@@ -1,36 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   irclib.h                                           :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/10 14:20:53 by wricky-t         ###   ########.fr       */
+/*   Created: 2023/11/10 13:11:50 by wricky-t          #+#    #+#             */
+/*   Updated: 2023/11/10 14:53:49 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef IRCLIB_H
-#define IRCLIB_H
+#include "Server.hpp"
 
-#include <iostream>
-
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
-#include <signal.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-#include <poll.h>
-
-#include <vector>
-#include <map>
-
-#include "Logger.hpp"
-#include "Color.hpp"
-
-#endif
+int main(int ac, char **av)
+{
+    if (ac != 3)
+        Logger::msgExitLog(INVALID_USAGE);
+    Server server(av[1], av[2]);
+    server.start();
+}
