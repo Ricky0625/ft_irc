@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/10 14:20:53 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/22 16:46:35 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@
 #include <vector>
 #include <map>
 
+#include "Parser.hpp"
 #include "Logger.hpp"
 #include "Color.hpp"
+
+#define CRLF "\r\n"
 
 #endif

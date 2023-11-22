@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/10 15:19:18 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/22 17:59:39 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,34 @@
 #define SERVER_HPP
 
 #include "irclib.h"
+#include "Client.hpp"
 
 #define INVALID_USAGE "Invalid usage! ./ircserv <port> <password>"
 #define FAIL_TO_INIT_SOCKET "Failed to initialize socket!"
+#define BUFFER_SIZE 1024
 
 class Server
 {
 public:
-    typedef std::vector<struct pollfd> PollFdList;
+    typedef std::vector<struct pollfd> PollFdList;  // <pollfd>
     typedef std::map<int, struct pollfd> PollTable; // <socketfd, pollfd>
+    typedef std::map<int, Client *> ClientTable;    // <socketfd, client object>
 
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
+    // event loop
     void start(void);
+
+    // checking
+    bool isCorrectPassword(const std::string &password);
 
 private:
     int _serverFd;
     std::string _password;
     PollFdList _pollList;
     PollTable _pollTable;
+    ClientTable _clients;
 
     // initialization
     void _createServerSocket(const std::string &port);
@@ -49,6 +57,9 @@ private:
 
     // action
     int _acceptConnection(int socketFd);
+    void _removeClient(int clientFd);
+    void _readRequest(int clientFd);
+    void _processRequests(int clientFd, const std::string &requestStr);
 };
 
 // utils
