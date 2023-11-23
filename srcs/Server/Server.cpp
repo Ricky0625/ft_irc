@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/22 18:09:48 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/23 21:35:51 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,9 +119,18 @@ void Server::_updatePollList(void)
     _pollList.clear();
     for (PollTable::iterator it = _pollTable.begin(); it != _pollTable.end(); ++it)
         _pollList.push_back(it->second);
-    // std::cout << "_pollList size: " << _pollList.size() << std::endl;
-    // std::cout << "_pollTable size: " << _pollTable.size() << std::endl;
-    // std::cout << "_clients size: " << _clients.size() << std::endl;
+}
+
+void Server::_stopListening(int clientFd)
+{
+    PollTable::iterator socket = _pollTable.find(clientFd);
+
+    if (socket != _pollTable.end())
+    {
+        close(clientFd);
+        _pollTable.erase(socket);
+        _updatePollList();
+    }
 }
 
 /**
@@ -228,12 +237,16 @@ void Server::_removeClient(int clientFd)
 
     if (client != _clients.end())
     {
-        delete client->second;  // clean up the client instance
-        _clients.erase(client); // remove from ClientTable
+        delete client->second;    // clean up the client instance
+        _clients.erase(client);   // remove from ClientTable
+        _stopListening(clientFd); // stop listening from this client
         std::cout << "Disconnect client " << clientFd << std::endl;
     }
 }
 
+/**
+ * @brief Read request from client. Try process request in each iteration.
+ */
 void Server::_readRequest(int clientFd)
 {
     std::string requestStr = "";
@@ -251,30 +264,34 @@ void Server::_readRequest(int clientFd)
         else if (bytesRead == 0)
         {
             _removeClient(clientFd);
+            _processRequests(clientFd, requestStr); // might be flawed
             return;
         }
 
-        // concat string
+        // concat string & process string
         requestStr.append(buffer, bytesRead);
-        if (bytesRead < BUFFER_SIZE)
+        _processRequests(clientFd, requestStr);
+        if (requestStr.empty())
             break;
     }
-    
-    _processRequests(clientFd, requestStr);
-
-    // need to set POLLIN | POLLOUT for this client
 }
 
-void Server::_processRequests(int clientFd, const std::string &requestStr)
+/**
+ * @brief Process the request string.
+ * @details
+ * As long as the request string has a CRLF, extract the string before it
+ * and parse the request string. CRLF marks the end of a client request.
+ */
+void Server::_processRequests(int clientFd, std::string &requestStr)
 {
-    Parser::Splitted requests;
-    Parser::splitStr(requestStr, requests, CRLF);
+    size_t crlfPos;
     IRCMessage ircMsg;
 
-    for (Parser::Splitted::size_type i = 0; i < requests.size(); i++)
+    while ((crlfPos = requestStr.find(CRLF)) != std::string::npos)
     {
-        ircMsg = Parser::parseIRCMessage(requests[i]);
-        Parser::showMessage(ircMsg);
+        std::string singleRequest = requestStr.substr(0, crlfPos);
+        ircMsg = Parser::parseIRCMessage(singleRequest);
+        requestStr = requestStr.substr(crlfPos + strlen(CRLF));
     }
     (void)clientFd;
 }

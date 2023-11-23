@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/22 17:59:39 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/23 21:25:34 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ private:
     // monitor list management
     void _addSocketToPollTable(int socketToMonitor, short events);
     void _updatePollList(void);
+    void _stopListening(int clientFd);
 
     // events
     void _handleSocketEvents(void);
@@ -59,7 +60,7 @@ private:
     int _acceptConnection(int socketFd);
     void _removeClient(int clientFd);
     void _readRequest(int clientFd);
-    void _processRequests(int clientFd, const std::string &requestStr);
+    void _processRequests(int clientFd, std::string &requestStr);
 };
 
 // utils

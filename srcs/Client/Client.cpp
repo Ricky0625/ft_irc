@@ -1,11 +1,7 @@
 #include "Client.hpp"
 
 // named constructor
-Client::Client(int fd, const std::string ip) : _fd(fd), _ip(ip)
-{
-    (void)_fd;
-    (void)_ip;
-}
+Client::Client(int fd, const std::string ip) : _fd(fd), _ip(ip), _readBuffer(""), _sendBuffer("") {}
 
 // destructor
 Client::~Client() {}

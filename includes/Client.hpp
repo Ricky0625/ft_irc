@@ -15,6 +15,14 @@ public:
 private:
     int _fd;
     std::string _ip;
+    
+    // identity
+    std::string _nickname;
+    std::string _realname;
+
+    // buffers
+    std::string _readBuffer;
+    std::string _sendBuffer;
 };
 
 std::ostream &operator<<(std::ostream &out, const Client &obj);
