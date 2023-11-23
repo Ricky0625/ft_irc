@@ -6,14 +6,14 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/23 21:35:51 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/23 22:43:38 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 // default constructor
-Server::Server(const std::string &port, const std::string &password) : _password(password)
+Server::Server(const std::string &port, const std::string &password) : _password(password), _cmdFactory(new CommandFactory())
 {
     _createServerSocket(port);
     if (_serverFd == -1)
@@ -286,11 +286,18 @@ void Server::_processRequests(int clientFd, std::string &requestStr)
 {
     size_t crlfPos;
     IRCMessage ircMsg;
+    ICommand *command;
 
     while ((crlfPos = requestStr.find(CRLF)) != std::string::npos)
     {
         std::string singleRequest = requestStr.substr(0, crlfPos);
         ircMsg = Parser::parseIRCMessage(singleRequest);
+        _cmdFactory->getCommand(ircMsg.command);
+        /**
+         * TODO:
+         * 1. find a way to stuff the ircMsg into the command object
+         * 2. execute the command here
+        */
         requestStr = requestStr.substr(crlfPos + strlen(CRLF));
     }
     (void)clientFd;

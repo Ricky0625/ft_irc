@@ -8,10 +8,6 @@ class PASS : public ICommand
 public:
     PASS(void);
     void execute();
-
-private:
-    ICommand *command;
 };
 
 #endif
- 

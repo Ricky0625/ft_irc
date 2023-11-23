@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/23 21:25:34 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/23 22:39:13 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include "irclib.h"
 #include "Client.hpp"
+#include "ICommand.hpp"
+#include "CommandFactory.hpp"
 
 #define INVALID_USAGE "Invalid usage! ./ircserv <port> <password>"
 #define FAIL_TO_INIT_SOCKET "Failed to initialize socket!"
@@ -23,9 +25,10 @@
 class Server
 {
 public:
-    typedef std::vector<struct pollfd> PollFdList;  // <pollfd>
-    typedef std::map<int, struct pollfd> PollTable; // <socketfd, pollfd>
-    typedef std::map<int, Client *> ClientTable;    // <socketfd, client object>
+    typedef std::vector<struct pollfd> PollFdList;         // <pollfd>
+    typedef std::map<int, struct pollfd> PollTable;        // <socketfd, pollfd>
+    typedef std::map<int, Client *> ClientTable;           // <socketfd, client object>
+    // typedef std::map<std::string, Channel *> ChannelTable; // <channel name, channel object>
 
     Server(const std::string &port, const std::string &password);
     ~Server(void);
@@ -42,6 +45,7 @@ private:
     PollFdList _pollList;
     PollTable _pollTable;
     ClientTable _clients;
+    CommandFactory *_cmdFactory;
 
     // initialization
     void _createServerSocket(const std::string &port);
