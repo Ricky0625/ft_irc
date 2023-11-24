@@ -26,17 +26,21 @@ CommandFactory::CommandFactory()
     // messages
     // _commands["PRIVMSG"] = new PRIVMSG();
     // _commands["NOTICE"] = new NOTICE();
-
 }
 
 // destructor
 CommandFactory::~CommandFactory() {}
 
-ICommand *CommandFactory::getCommand(const std::string &commandName)
+/**
+ * @brief Dynamically create and initialize concrete command object based on command.
+ */
+ICommand *CommandFactory::recognizeCommand(Server &server, const IRCMessage &ircMsg)
 {
-    CommandTable::iterator command = _commands.find(commandName);
+    CommandTable::iterator command = _commands.find(ircMsg.command);
+    ICommand *commandObj = (command != _commands.end() ? command->second : NULL);
 
-    if (command != _commands.end())
-        return command->second;
-    return NULL;
+    if (commandObj != NULL)
+        commandObj->initialize(server, ircMsg);
+
+    return commandObj;
 }

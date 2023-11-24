@@ -3,7 +3,11 @@
 
 #include "irclib.h"
 #include "ICommand.hpp"
-#include "commands.h"
+#include "Server.hpp"
+#include "AvailableCommands.hpp"
+
+class ICommand;
+class Server;
 
 class CommandFactory
 {
@@ -13,7 +17,7 @@ public:
     CommandFactory(void);
     ~CommandFactory(void);
 
-    ICommand *getCommand(const std::string &commandName);
+    ICommand *recognizeCommand(Server &server, const IRCMessage &ircMsg);
 
 private:
     CommandTable _commands;
