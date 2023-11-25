@@ -10,7 +10,7 @@ public:
     ~Client(void);
 
     // string representation
-    std::string toString(void) const;
+    // std::string toString(void) const;
 
 private:
     int _fd;

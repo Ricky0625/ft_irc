@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/24 14:59:02 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/25 13:02:57 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void Server::_createServerSocket(const std::string &port)
     struct addrinfo *servinfo;
 
     obtainSuitableAddresses(port, &servinfo);
-    for (struct addrinfo *addr = servinfo; addr != nullptr; addr = addr->ai_next)
+    for (struct addrinfo *addr = servinfo; addr != NULL; addr = addr->ai_next)
     {
         if (createBindListen(addr, socketfd) == false)
         {
@@ -292,6 +292,7 @@ void Server::_processRequests(int clientFd, std::string &requestStr)
     {
         std::string singleRequest = requestStr.substr(0, crlfPos);
         ircMsg = Parser::parseIRCMessage(singleRequest);
+        std::cout << singleRequest << std::endl;
         // command = _cmdFactory->recognizeCommand(*this, ircMsg);
         if (command != NULL)
         {

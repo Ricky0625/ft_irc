@@ -31,11 +31,17 @@ DEPS		:= $(OBJS:.o=.d)
 
 HEADER		:= $(shell find ${INC_DIR} -name "*.hpp")
 INCLUDES	:= $(addprefix -I, $(dir ${HEADER})) -MMD
-INC			:= ${INCLUDES} -include-pch ${PCH}
+INC			:= ${INCLUDES}
 RM			:= rm -rf
 
 BL			:= \033[1;34m
 DF			:= \033[0m
+
+UNAME_S 	:= $(shell uname -s)
+
+ifeq ($(UNAME_S), Darwin)
+	INC += -include-pch ${PCH}
+endif
 
 all: $(NAME)
 

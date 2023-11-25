@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Logger.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:22:50 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/10 14:09:20 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/25 12:54:38 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Logger::~Logger() {}
 void Logger::msgExitLog(const std::string &msg)
 {
     std::cerr << BOLD_RED << "[IRCSERV] " <<  msg << RESET << std::endl;
-    std::exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
 }
 
 /**
@@ -33,7 +33,7 @@ void Logger::msgExitLog(const std::string &msg)
 void Logger::c_exitLog(const std::string &identifier, c_logger logger)
 {
     std::cerr << BOLD_RED << identifier << ": " << logger(errno) << RESET << std::endl;
-    std::exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
 }
 
 /**
@@ -45,7 +45,7 @@ void Logger::c_exitLog(const std::string &identifier, c_logger logger)
 void Logger::exitLog(const std::string &identifier, logger logger)
 {
     std::cerr << BOLD_RED << identifier << ": " << logger(errno) << RESET << std::endl;
-    std::exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
 }
 
 /**
