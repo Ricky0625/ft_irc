@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/25 13:02:57 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/26 14:34:11 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,27 +286,13 @@ void Server::_processRequests(int clientFd, std::string &requestStr)
 {
     size_t crlfPos;
     IRCMessage ircMsg;
-    ICommand *command = NULL;
+    // ICommand *command = NULL;
 
     while ((crlfPos = requestStr.find(CRLF)) != std::string::npos)
     {
         std::string singleRequest = requestStr.substr(0, crlfPos);
         ircMsg = Parser::parseIRCMessage(singleRequest);
-        std::cout << singleRequest << std::endl;
-        // command = _cmdFactory->recognizeCommand(*this, ircMsg);
-        if (command != NULL)
-        {
-            std::cout << " ===== CMD ===== " << std::endl;
-            std::cout << command->getPrefix() << std::endl;
-            std::cout << command->getCommand() << std::endl;
-            std::vector<std::string> args = command->getArgs();
-            for (size_t i = 0; i < args.size(); i++)
-            {
-                std::cout << " - " << args[i] << std::endl;
-            }
-            std::cout << command->getTrailing() << std::endl;
-            std::cout << " =============== " << std::endl;
-        }
+
         /**
          * TODO:
          * 1. find a way to stuff the ircMsg into the command object

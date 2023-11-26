@@ -2,9 +2,8 @@
 #define ICOMMAND_HPP
 
 #include "irclib.h"
-#include "Server.hpp"
 
-class Server;
+class Server; // forward declaration
 
 class ICommand
 {
@@ -27,10 +26,7 @@ public:
 
 protected:
     Server *_server;
-    std::string _prefix;
-    std::string _command;
-    std::vector<std::string> _args;
-    std::string _trailing;
+    IRCMessage _ircMsg;
 };
 
 #endif

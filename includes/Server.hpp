@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/24 14:58:28 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/26 15:06:38 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 
 #include "irclib.h"
 #include "Client.hpp"
-#include "ICommand.hpp"
 
 #define INVALID_USAGE "Invalid usage! ./ircserv <port> <password>"
 #define FAIL_TO_INIT_SOCKET "Failed to initialize socket!"
 #define BUFFER_SIZE 1024
 
-class ICommand;
+class CommandFactory; // forward declaration
+
 class Server
 {
 public:

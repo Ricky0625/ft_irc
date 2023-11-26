@@ -9,10 +9,7 @@ ICommand::~ICommand() {}
 void ICommand::initialize(Server &server, const IRCMessage &ircMsg)
 {
     _server = &server;
-    _prefix = ircMsg.prefix;
-    _command = ircMsg.command;
-    _args = ircMsg.arguments;
-    _trailing = ircMsg.trailing;
+    _ircMsg = ircMsg;
 }
 
 /**
@@ -21,7 +18,7 @@ void ICommand::initialize(Server &server, const IRCMessage &ircMsg)
 */
 std::string ICommand::getPrefix() const
 {
-    return _prefix;
+    return _ircMsg.prefix;
 }
 
 /**
@@ -30,7 +27,7 @@ std::string ICommand::getPrefix() const
 */
 std::string ICommand::getCommand() const
 {
-    return _command;
+    return _ircMsg.command;
 }
 
 /**
@@ -39,7 +36,7 @@ std::string ICommand::getCommand() const
 */
 std::vector<std::string> ICommand::getArgs() const
 {
-    return _args;
+    return _ircMsg.arguments;
 }
 
 /**
@@ -48,5 +45,5 @@ std::vector<std::string> ICommand::getArgs() const
 */
 std::string ICommand::getTrailing() const
 {
-    return _trailing;
+    return _ircMsg.trailing;
 }

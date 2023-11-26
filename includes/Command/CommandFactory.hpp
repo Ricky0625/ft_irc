@@ -2,12 +2,10 @@
 #define COMMANDFACTORY_HPP
 
 #include "irclib.h"
-#include "ICommand.hpp"
-#include "Server.hpp"
 #include "AvailableCommands.hpp"
 
-class ICommand;
-class Server;
+class Server;   // forward declaration
+class ICommand; // forward declaration
 
 class CommandFactory
 {
