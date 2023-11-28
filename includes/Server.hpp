@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/26 15:06:38 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/28 21:42:54 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "irclib.h"
 #include "Client.hpp"
+#include "CommandFactory.hpp"
 
 #define INVALID_USAGE "Invalid usage! ./ircserv <port> <password>"
 #define FAIL_TO_INIT_SOCKET "Failed to initialize socket!"
@@ -36,15 +37,24 @@ public:
     // event loop
     void start(void);
 
+    // event management
+    void subscribeEvent(int clientFd, short event);
+    void unsubscribeEvent(int clientFd, short event);
+
     // checking
     bool isCorrectPassword(const std::string &password);
+
+    // getters
+    Client *getClient(int clientFd) const;
 
 private:
     int _serverFd;
     std::string _password;
+
     PollFdList _pollList;
     PollTable _pollTable;
     ClientTable _clients;
+    CommandFactory *_cmdFactory;
 
     // initialization
     void _createServerSocket(const std::string &port);
@@ -64,6 +74,7 @@ private:
     void _removeClient(int clientFd);
     void _readRequest(int clientFd);
     void _processRequests(int clientFd, std::string &requestStr);
+    void _sendReply(int clientFd);
 };
 
 // utils

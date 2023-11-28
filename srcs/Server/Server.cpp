@@ -6,14 +6,14 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/26 14:34:11 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/28 21:53:21 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 // default constructor
-Server::Server(const std::string &port, const std::string &password) : _password(password)
+Server::Server(const std::string &port, const std::string &password) : _password(password), _cmdFactory(new CommandFactory())
 {
     _createServerSocket(port);
     if (_serverFd == -1)
@@ -29,6 +29,7 @@ Server::~Server()
         close(_pollList[i].fd);
         _pollTable.erase(_pollList[i].fd);
     }
+    delete _cmdFactory;
 }
 
 /**
@@ -62,6 +63,40 @@ void Server::start(void)
         }
         _handleSocketEvents();
     }
+}
+
+void Server::subscribeEvent(int clientFd, short event)
+{
+    PollTable::iterator target = _pollTable.find(clientFd);
+
+    if (target == _pollTable.end())
+        return;
+
+    struct pollfd &socketInfo = target->second;
+    socketInfo.events |= event;
+    _updatePollList();
+}
+
+void Server::unsubscribeEvent(int clientFd, short event)
+{
+    PollTable::iterator target = _pollTable.find(clientFd);
+
+    if (target == _pollTable.end())
+        return;
+
+    struct pollfd &socketInfo = target->second;
+    socketInfo.events &= event;
+    _updatePollList();
+}
+
+Client *Server::getClient(int clientFd) const
+{
+    ClientTable::const_iterator client = _clients.find(clientFd);
+
+    if (client == _clients.end())
+        return NULL;
+
+    return client->second;
 }
 
 /**
@@ -173,7 +208,7 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
     if (socketInfo.revents & POLLOUT)
     {
         // server can write response without blocking
-        std::cout << "Bro, you are ready to write response to " << socketInfo.fd << std::endl;
+        _sendReply(socketInfo.fd);
     }
     else if (socketInfo.revents & POLLIN)
     {
@@ -249,9 +284,15 @@ void Server::_removeClient(int clientFd)
  */
 void Server::_readRequest(int clientFd)
 {
-    std::string requestStr = "";
     char buffer[BUFFER_SIZE];
     ssize_t bytesRead;
+
+    Client *target = getClient(clientFd);
+
+    if (target == NULL) // immature error handling here
+        return;
+
+    std::string readBuffer = target->getBuffer(READ);
 
     while (true)
     {
@@ -263,17 +304,18 @@ void Server::_readRequest(int clientFd)
         }
         else if (bytesRead == 0)
         {
+            _processRequests(clientFd, readBuffer); // might be flawed
             _removeClient(clientFd);
-            _processRequests(clientFd, requestStr); // might be flawed
             return;
         }
 
         // concat string & process string
-        requestStr.append(buffer, bytesRead);
-        _processRequests(clientFd, requestStr);
-        if (requestStr.empty())
+        readBuffer.append(buffer, bytesRead); // might be flawed
+        _processRequests(clientFd, readBuffer);
+        if (readBuffer.empty())
             break;
     }
+    close(_serverFd);
 }
 
 /**
@@ -282,23 +324,51 @@ void Server::_readRequest(int clientFd)
  * As long as the request string has a CRLF, extract the string before it
  * and parse the request string. CRLF marks the end of a client request.
  */
-void Server::_processRequests(int clientFd, std::string &requestStr)
+void Server::_processRequests(int clientFd, std::string &readBuffer)
 {
     size_t crlfPos;
     IRCMessage ircMsg;
-    // ICommand *command = NULL;
+    ICommand *command;
 
-    while ((crlfPos = requestStr.find(CRLF)) != std::string::npos)
+    while ((crlfPos = readBuffer.find(CRLF)) != std::string::npos)
     {
-        std::string singleRequest = requestStr.substr(0, crlfPos);
+        std::string singleRequest = readBuffer.substr(0, crlfPos);
         ircMsg = Parser::parseIRCMessage(singleRequest);
-
-        /**
-         * TODO:
-         * 1. find a way to stuff the ircMsg into the command object
-         * 2. execute the command here
-         */
-        requestStr = requestStr.substr(crlfPos + strlen(CRLF));
+        std::cout << BOLD_YELLOW << singleRequest << RESET << std::endl;
+        command = _cmdFactory->recognizeCommand(*this, ircMsg);
+        if (command != NULL)
+        {
+            command->execute(clientFd);
+            subscribeEvent(clientFd, POLLOUT); // is it ok to subscribe the event in a loop?
+            delete command;
+        }
+        readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
     }
-    (void)clientFd;
+}
+
+void Server::_sendReply(int clientFd)
+{
+    Client *target = getClient(clientFd);
+    ssize_t bytesSent;
+
+    if (target == NULL || target->getBuffer(SEND).empty())
+    {
+        unsubscribeEvent(clientFd, POLLOUT);
+        return;
+    }
+
+    std::string sendBuffer = target->getBuffer(SEND);
+    bytesSent = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
+    if (bytesSent == -1)
+    {
+        unsubscribeEvent(clientFd, POLLOUT);
+        return;
+    }
+    
+    target->clearBuffer(SEND);
+    target->queueBuffer(SEND, sendBuffer.substr(bytesSent));
+
+    if (!target->getBuffer(SEND).empty())
+        return;
+    unsubscribeEvent(clientFd, POLLOUT);
 }

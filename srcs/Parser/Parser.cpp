@@ -91,7 +91,7 @@ IRCMessage Parser::parseIRCMessage(const std::string &str)
     return msg;
 }
 
-void Parser::showMessage(IRCMessage &msg)
+void Parser::showMessage(const IRCMessage &msg)
 {
     std::cout << "= = = = = = = = = = = = = = = = = =" << std::endl;
     if (!msg.prefix.empty())

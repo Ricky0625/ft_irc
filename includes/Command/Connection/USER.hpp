@@ -7,7 +7,7 @@ class USER : public ICommand
 {
 public:
     USER(void);
-    void execute();
+    void execute(int clientFd);
 };
 
 #endif

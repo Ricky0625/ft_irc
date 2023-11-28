@@ -7,7 +7,7 @@ class NICK : public ICommand
 {
 public:
     NICK(void);
-    void execute();
+    void execute(int clientFd);
 };
 
 #endif

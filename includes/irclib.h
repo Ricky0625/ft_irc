@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/25 12:59:36 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/11/28 12:16:06 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,6 @@
 #include "Color.hpp"
 
 #define CRLF "\r\n"
+#define SERVER_PREFIX ":capygroove.irc.com"
 
 #endif

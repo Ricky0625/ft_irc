@@ -47,3 +47,8 @@ std::string ICommand::getTrailing() const
 {
     return _ircMsg.trailing;
 }
+
+IRCMessage ICommand::getIRCMsg() const
+{
+    return _ircMsg;
+}
