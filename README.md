@@ -21,7 +21,6 @@ Each IRC message may consist of up to three main parts:
 The prefix, command, and all parameters are separated by one ASCII space character each.
 
 
-
 ## Naming Convention
 
 ### Client

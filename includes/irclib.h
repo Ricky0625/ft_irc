@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/28 12:16:06 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/01 15:17:00 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#include <ctime>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -39,6 +40,8 @@
 #include "Color.hpp"
 
 #define CRLF "\r\n"
-#define SERVER_PREFIX ":capygroove.irc.com"
+#define SERVER_NAME "capygroove"
+#define HOST "localhost"
+#define VERSION "v1.0.0"
 
 #endif

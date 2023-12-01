@@ -17,16 +17,24 @@ public:
 
     // setter
     void setRegistered(const bool &status);
+    void setAuthenticated(const bool &status);
+    void setNickname(const std::string &name);
+    void setRealname(const std::string &name);
+    void setUsername(const std::string &name);
 
     // getter
-    bool isRegistered(void) const;
+    bool isRegistered(void);
+    bool isAuthenticated(void) const;
     std::string getNickname(void) const;
     std::string getRealname(void) const;
+    std::string getUsername(void) const;
     std::string getBuffer(BufferType type);
 
     // buffer management
     void queueBuffer(BufferType type, const std::string &msg);
     void clearBuffer(BufferType type);
+
+    std::string toString(void);
 
 private:
     int _fd;
@@ -34,16 +42,18 @@ private:
 
     // booleans
     bool _isRegistered;
+    bool _isAuthenticated;
 
     // identity
     std::string _nickname;
     std::string _realname;
+    std::string _username;
 
     // buffers
     std::string _readBuffer;
     std::string _sendBuffer;
 };
 
-std::ostream &operator<<(std::ostream &out, const Client &obj);
+std::ostream &operator<<(std::ostream &out, Client &obj);
 
 #endif

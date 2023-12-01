@@ -21,26 +21,15 @@ void PASS::execute(int clientFd)
     Server &server = *_server;
     Client *target = server.getClient(clientFd);
 
-    if (target == NULL) return;
+    if (target == NULL)
+        return;
 
     if (getArgs().size() < 1)
-    {
         target->queueBuffer(SEND, ERR_NEEDMOREPARAMS(target, _ircMsg.command));
-        return;
-    }
-
-    if (target->isRegistered())
-    {
+    else if (target->isAuthenticated() && target->isRegistered())
         target->queueBuffer(SEND, ERR_ALREADYREGISTERED(target));
-        return;
-    }
-
-    if (!server.isCorrectPassword(_password))
-    {
+    else if (!server.isCorrectPassword(_password))
         target->queueBuffer(SEND, ERR_PASSWDMISMATCH(target));
-        return;
-    }
-
-    // if successful
-    // target->setRegistered(true);
+    else
+        target->setAuthenticated(true);
 }

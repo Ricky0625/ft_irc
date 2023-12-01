@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/28 21:53:21 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/01 21:06:08 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ Server::Server(const std::string &port, const std::string &password) : _password
     if (_serverFd == -1)
         Logger::msgExitLog(FAIL_TO_INIT_SOCKET);
     _addSocketToPollTable(_serverFd, POLLIN);
+    _updateUpTime();
+    Display::displayServerInfo(port, password, getUpTime());
 }
 
 // destructor
@@ -38,6 +40,29 @@ Server::~Server()
 bool Server::isCorrectPassword(const std::string &password)
 {
     return _password == password;
+}
+
+bool Server::isClientAuthenticated(int clientFd)
+{
+    Client *target = getClient(clientFd);
+
+    if (target == NULL)
+        return false;
+    
+    return target->isAuthenticated();
+}
+
+bool Server::isNicknameTaken(const std::string &newNick) const
+{
+    for (ClientTable::const_iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+        const std::string &clientNickname = it->second->getNickname();
+        if (clientNickname.empty())
+            continue;
+        if (clientNickname == newNick)
+            return true;
+    }
+    return false;
 }
 
 /**
@@ -65,6 +90,9 @@ void Server::start(void)
     }
 }
 
+/**
+ * @brief Subscribe an event for a client
+*/
 void Server::subscribeEvent(int clientFd, short event)
 {
     PollTable::iterator target = _pollTable.find(clientFd);
@@ -77,6 +105,9 @@ void Server::subscribeEvent(int clientFd, short event)
     _updatePollList();
 }
 
+/**
+ * @brief Unsubscribe an event from a designated client's socket event list
+*/
 void Server::unsubscribeEvent(int clientFd, short event)
 {
     PollTable::iterator target = _pollTable.find(clientFd);
@@ -89,6 +120,10 @@ void Server::unsubscribeEvent(int clientFd, short event)
     _updatePollList();
 }
 
+/**
+ * @brief Find a client based on their fd from the client table
+ * @return NULL if not found. Pointer to that client object if found.
+*/
 Client *Server::getClient(int clientFd) const
 {
     ClientTable::const_iterator client = _clients.find(clientFd);
@@ -97,6 +132,11 @@ Client *Server::getClient(int clientFd) const
         return NULL;
 
     return client->second;
+}
+
+std::string Server::getUpTime() const
+{
+    return _upTime;
 }
 
 /**
@@ -124,6 +164,17 @@ void Server::_createServerSocket(const std::string &port)
         break;
     }
     freeaddrinfo(servinfo);
+}
+
+void Server::_updateUpTime()
+{
+    std::time_t currentTime = std::time(NULL);
+    std::tm *localTime = std::localtime(&currentTime);
+    
+    char buffer[80];
+    std::strftime(buffer, sizeof(buffer), "%m-%d-%Y %H:%M:%S", localTime);
+
+    _upTime = buffer;
 }
 
 /**
@@ -156,6 +207,11 @@ void Server::_updatePollList(void)
         _pollList.push_back(it->second);
 }
 
+/**
+ * @brief Stop listening to a client
+ * @details
+ * Close the client fd and erase the client from the pollTable.
+*/
 void Server::_stopListening(int clientFd)
 {
     PollTable::iterator socket = _pollTable.find(clientFd);
@@ -208,6 +264,7 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
     if (socketInfo.revents & POLLOUT)
     {
         // server can write response without blocking
+        // std::cout << "writing to " << socketInfo.fd << std::endl;
         _sendReply(socketInfo.fd);
     }
     else if (socketInfo.revents & POLLIN)
@@ -294,28 +351,22 @@ void Server::_readRequest(int clientFd)
 
     std::string readBuffer = target->getBuffer(READ);
 
-    while (true)
+    bytesRead = recv(clientFd, buffer, BUFFER_SIZE, 0);
+    if (bytesRead == -1)
     {
-        bytesRead = recv(clientFd, buffer, BUFFER_SIZE, 0);
-        if (bytesRead == -1)
-        {
-            Logger::justLog("recv", &strerror);
-            return;
-        }
-        else if (bytesRead == 0)
-        {
-            _processRequests(clientFd, readBuffer); // might be flawed
-            _removeClient(clientFd);
-            return;
-        }
-
-        // concat string & process string
-        readBuffer.append(buffer, bytesRead); // might be flawed
-        _processRequests(clientFd, readBuffer);
-        if (readBuffer.empty())
-            break;
+        Logger::justLog("recv", &strerror);
+        return;
     }
-    close(_serverFd);
+    else if (bytesRead == 0)
+    {
+        _processRequests(clientFd, readBuffer); // might be flawed
+        _removeClient(clientFd);
+        return;
+    }
+
+    // concat string & process string
+    readBuffer.append(buffer, bytesRead); // might be flawed
+    _processRequests(clientFd, readBuffer);
 }
 
 /**
@@ -329,46 +380,55 @@ void Server::_processRequests(int clientFd, std::string &readBuffer)
     size_t crlfPos;
     IRCMessage ircMsg;
     ICommand *command;
+    std::string singleRequest;
 
+    Display::displayIncoming(clientFd, readBuffer);
     while ((crlfPos = readBuffer.find(CRLF)) != std::string::npos)
     {
-        std::string singleRequest = readBuffer.substr(0, crlfPos);
+        singleRequest = readBuffer.substr(0, crlfPos);
         ircMsg = Parser::parseIRCMessage(singleRequest);
-        std::cout << BOLD_YELLOW << singleRequest << RESET << std::endl;
+
         command = _cmdFactory->recognizeCommand(*this, ircMsg);
         if (command != NULL)
         {
             command->execute(clientFd);
             subscribeEvent(clientFd, POLLOUT); // is it ok to subscribe the event in a loop?
-            delete command;
         }
         readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
     }
 }
 
+/**
+ * @brief Send back replies to designated client
+ * @details
+ * If any of the following occurs, the client will be unsubscribe to POLLOUT event
+ * 1. target not found
+ * 2. target's send buffer is empty
+ * Othewise, try to send everything in the buffer to the client. In case where the
+ * send function only sent a part of the message, queue send buffer with the
+ * remaining message.
+ * If after sending the message, the sendbuffer is empty, unsubscribe to POLLOUT.
+*/
 void Server::_sendReply(int clientFd)
 {
     Client *target = getClient(clientFd);
     ssize_t bytesSent;
 
     if (target == NULL || target->getBuffer(SEND).empty())
-    {
-        unsubscribeEvent(clientFd, POLLOUT);
         return;
-    }
 
     std::string sendBuffer = target->getBuffer(SEND);
     bytesSent = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
     if (bytesSent == -1)
-    {
-        unsubscribeEvent(clientFd, POLLOUT);
         return;
-    }
     
+    Display::displayOutgoing(clientFd, sendBuffer);
     target->clearBuffer(SEND);
     target->queueBuffer(SEND, sendBuffer.substr(bytesSent));
 
     if (!target->getBuffer(SEND).empty())
         return;
-    unsubscribeEvent(clientFd, POLLOUT);
+
+    if (target->isAuthenticated() == false || target->isRegistered() == false)
+        _removeClient(clientFd);
 }
