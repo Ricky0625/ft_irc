@@ -7,7 +7,7 @@ CommandFactory::CommandFactory()
     _commands["PASS"] = new PASS();
     _commands["NICK"] = new NICK();
     _commands["USER"] = new USER();
-    // _commands["PING"] = new PING();
+    _commands["PING"] = new PING();
     // _commands["OPER"] = new OPER();
     // _commands["QUIT"] = new QUIT();
 

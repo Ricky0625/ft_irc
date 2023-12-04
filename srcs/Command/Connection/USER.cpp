@@ -31,10 +31,10 @@ void USER::execute(int clientFd)
 
     if (target == NULL || !target->isAuthenticated())
         return;
-    
+
     if (target->isRegistered()) // if already registered
         target->queueBuffer(SEND, ERR_ALREADYREGISTERED(target));
-    else if (getArgs().size() < 4)
+    else if (getArgs().size() < 3)
         target->queueBuffer(SEND, ERR_NEEDMOREPARAMS(target, _ircMsg.command));
     else
     {
@@ -42,8 +42,6 @@ void USER::execute(int clientFd)
         target->setRealname(_realname);
     }
 
-    if (target->isRegistered()) // if after setting username and realname and consider as registered
-    {
-        target->queueBuffer(SEND, RPL_WELCOME(target));
-    }
+    if (target->isWelcomeRequired())
+        queueWelcomeMessage(target, server.getUpTime());
 }

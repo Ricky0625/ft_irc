@@ -23,6 +23,8 @@ public:
     std::string getTrailing(void) const;
     IRCMessage getIRCMsg(void) const;
 
+    void queueWelcomeMessage(Client *client, const std::string &upTime);
+
 protected:
     Server *_server;
     IRCMessage _ircMsg;

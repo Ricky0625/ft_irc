@@ -52,3 +52,16 @@ IRCMessage ICommand::getIRCMsg() const
 {
     return _ircMsg;
 }
+
+void ICommand::queueWelcomeMessage(Client *client, const std::string &upTime)
+{
+    client->queueBuffer(SEND, RPL_WELCOME(client));
+    client->queueBuffer(SEND, RPL_YOURHOST(client));
+    client->queueBuffer(SEND, RPL_CREATED(client, upTime));
+    client->queueBuffer(SEND, RPL_MYINFO(client));
+    /**
+     * TODO:
+     * 1. complete RPL_MYINFO
+     * 2. complete RPL_MYINFO
+    */
+}

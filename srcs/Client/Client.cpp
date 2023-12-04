@@ -19,14 +19,6 @@ void Client::setAuthenticated(const bool &status)
 void Client::setNickname(const std::string &name)
 {
     _nickname = name;
-    
-    // use nickname as fallback
-    // if (_realname.empty())
-    //     setRealname(_nickname);
-    
-    // use nickname as fallback
-    // if (_username.empty())
-    //     setUsername(_nickname);
 }
 
 void Client::setRealname(const std::string &name)
@@ -42,17 +34,29 @@ void Client::setUsername(const std::string &name)
 
 bool Client::isRegistered(void)
 {
-    if (_isRegistered) // if is registered, then return true
-        return _isRegistered;
-    
-    // if not, check if the current state of the user completed the registration
-    if (!(_nickname.empty() && _realname.empty() && _username.empty()))
-    {
-        // if nickname, realname and username are not empty
+    return _isRegistered;
+}
+
+void Client::checkRegistered(void)
+{
+    if (!_nickname.empty() && !_username.empty() && !_realname.empty())
         setRegistered(true);
-        return _isRegistered;
+}
+
+bool Client::isWelcomeRequired(void)
+{
+    // if user registered
+    if (_isRegistered)
+        return false;
+
+    // if all the names are set, set as registered, return true to send welcome
+    if (!_nickname.empty() && !_username.empty() && !_realname.empty())
+    {
+        setRegistered(true);
+        return true;
     }
 
+    // if one of the name is not set, don't send welcome
     return false;
 }
 

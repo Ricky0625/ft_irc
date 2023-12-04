@@ -30,6 +30,10 @@ public:
     std::string getUsername(void) const;
     std::string getBuffer(BufferType type);
 
+    // checking
+    void checkRegistered(void);
+    bool isWelcomeRequired(void);
+
     // buffer management
     void queueBuffer(BufferType type, const std::string &msg);
     void clearBuffer(BufferType type);

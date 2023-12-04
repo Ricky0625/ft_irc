@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 14:51:18 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/11/10 14:51:47 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/03 19:32:09 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void obtainSuitableAddresses(const std::string &port, struct addrinfo **servinfo
     struct addrinfo hints;
 
     setupHints(hints);
-    if (getaddrinfo("localhost", port.c_str(), &hints, servinfo) != 0)
+    if (getaddrinfo(NULL, port.c_str(), &hints, servinfo) != 0)
         Logger::c_exitLog("getaddrinfo", &gai_strerror);
 }
 
@@ -62,6 +62,13 @@ bool createBindListen(struct addrinfo *addr, int &socketfd)
     }
 
     fcntl(socketfd, F_SETFL, O_NONBLOCK, FD_CLOEXEC); // SET SOCKET TO NON-BLOCKING
+
+    // DELETE THIS ==========
+    int optvalue = 1;
+    if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &optvalue, sizeof(optvalue)) == -1)
+        Logger::exitLog("setsockopt", &strerror);
+    // DELETE THIS ==========
+    
 
     if (bind(socketfd, addr->ai_addr, addr->ai_addrlen) == -1)
     {

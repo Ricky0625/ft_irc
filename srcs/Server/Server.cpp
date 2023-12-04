@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/01 21:06:08 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/04 16:46:55 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void Server::unsubscribeEvent(int clientFd, short event)
         return;
 
     struct pollfd &socketInfo = target->second;
-    socketInfo.events &= event;
+    socketInfo.events &= ~event;
     _updatePollList();
 }
 
@@ -256,36 +256,50 @@ void Server::_handleServerEvents(const pollfd &socketInfo)
     }
 }
 
+static void pollEventErrorMessage(short event, int clientFd)
+{
+    switch (event)
+    {
+    case POLLERR:
+        std::cout << BOLD_RED "An error has occurred on Client " << clientFd << ". Disconnectin..." RESET << std::endl;
+        break;
+    case POLLHUP:
+        std::cout << BOLD_RED "Client " << clientFd << " hung up on us. Disconnecting..." << std::endl;
+        break;
+    case POLLNVAL:
+        std::cout << BOLD_RED "Client " << clientFd << "'s socket not initialized properly. Disconnecting..." RESET << std::endl;
+        break;
+    }
+}
+
 /**
  * @brief Handle client's events
  */
 void Server::_handleClientEvents(const pollfd &socketInfo)
 {
-    if (socketInfo.revents & POLLOUT)
+    if (socketInfo.revents & POLLOUT) // server can write response without blocking
     {
-        // server can write response without blocking
-        // std::cout << "writing to " << socketInfo.fd << std::endl;
+        std::cout << std::flush;
         _sendReply(socketInfo.fd);
     }
-    else if (socketInfo.revents & POLLIN)
+    else if (socketInfo.revents & POLLIN) // server can listen request without blocking
     {
-        // server can listen request without blocking
         _readRequest(socketInfo.fd);
     }
-    else if (socketInfo.revents & POLLERR)
+    else if (socketInfo.revents & POLLERR) // an error has occurred on this socket
     {
-        // an error has occurred on this socket
-        std::cout << "Bro, " << socketInfo.fd << " has some issues. Please investigate." << std::endl;
-    }
-    else if (socketInfo.revents & POLLHUP)
-    {
-        // the remote side of the connection hung up
+        pollEventErrorMessage(POLLERR, socketInfo.fd);
         _removeClient(socketInfo.fd);
     }
-    else if (socketInfo.revents & POLLNVAL)
+    else if (socketInfo.revents & POLLHUP) // the remote side of the connection hung up
     {
-        // not sure if this will ever happen. this means that there's something wrong with the socket initialization
-        std::cout << "Bro, there's an issue with this client's socket initialization." << std::endl;
+        pollEventErrorMessage(POLLHUP, socketInfo.fd);
+        _removeClient(socketInfo.fd);
+    }
+    else if (socketInfo.revents & POLLNVAL) // not sure if this will ever happen. this means that there's something wrong with the socket initialization
+    {
+        pollEventErrorMessage(POLLNVAL, socketInfo.fd);
+        _removeClient(socketInfo.fd);
     }
 }
 
@@ -311,6 +325,7 @@ int Server::_acceptConnection(int socketFd)
     if (fcntl(clientfd, F_SETFL, O_NONBLOCK) == -1)
     {
         Logger::justLog("fcntl", &strerror);
+        close(clientfd);
         return -1;
     }
 
@@ -346,27 +361,25 @@ void Server::_readRequest(int clientFd)
 
     Client *target = getClient(clientFd);
 
-    if (target == NULL) // immature error handling here
+    if (target == NULL) // no such client
         return;
-
-    std::string readBuffer = target->getBuffer(READ);
 
     bytesRead = recv(clientFd, buffer, BUFFER_SIZE, 0);
     if (bytesRead == -1)
     {
         Logger::justLog("recv", &strerror);
+        _removeClient(clientFd);
         return;
     }
-    else if (bytesRead == 0)
+    else if (bytesRead == 0) // client disconnected
     {
-        _processRequests(clientFd, readBuffer); // might be flawed
         _removeClient(clientFd);
         return;
     }
 
     // concat string & process string
-    readBuffer.append(buffer, bytesRead); // might be flawed
-    _processRequests(clientFd, readBuffer);
+    target->queueBuffer(READ, buffer);
+    _processRequests(clientFd, target);
 }
 
 /**
@@ -375,14 +388,14 @@ void Server::_readRequest(int clientFd)
  * As long as the request string has a CRLF, extract the string before it
  * and parse the request string. CRLF marks the end of a client request.
  */
-void Server::_processRequests(int clientFd, std::string &readBuffer)
+void Server::_processRequests(int clientFd, Client *target)
 {
     size_t crlfPos;
     IRCMessage ircMsg;
     ICommand *command;
     std::string singleRequest;
+    std::string readBuffer = target->getBuffer(READ);
 
-    Display::displayIncoming(clientFd, readBuffer);
     while ((crlfPos = readBuffer.find(CRLF)) != std::string::npos)
     {
         singleRequest = readBuffer.substr(0, crlfPos);
@@ -394,8 +407,13 @@ void Server::_processRequests(int clientFd, std::string &readBuffer)
             command->execute(clientFd);
             subscribeEvent(clientFd, POLLOUT); // is it ok to subscribe the event in a loop?
         }
+
         readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
     }
+    
+    target->clearBuffer(READ);
+    if (!readBuffer.empty())
+        target->queueBuffer(READ, readBuffer);
 }
 
 /**
@@ -420,15 +438,12 @@ void Server::_sendReply(int clientFd)
     std::string sendBuffer = target->getBuffer(SEND);
     bytesSent = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
     if (bytesSent == -1)
+    {
+        Logger::justLog("send", &strerror);
         return;
+    }
     
-    Display::displayOutgoing(clientFd, sendBuffer);
     target->clearBuffer(SEND);
     target->queueBuffer(SEND, sendBuffer.substr(bytesSent));
-
-    if (!target->getBuffer(SEND).empty())
-        return;
-
-    if (target->isAuthenticated() == false || target->isRegistered() == false)
-        _removeClient(clientFd);
+    unsubscribeEvent(clientFd, POLLOUT);
 }

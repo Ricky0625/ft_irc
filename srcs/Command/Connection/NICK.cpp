@@ -19,6 +19,7 @@ void NICK::execute(int clientFd)
 {
     Server &server = *_server;
     Client *target = server.getClient(clientFd);
+    std::string oldNickname;
 
     if (target == NULL || !target->isAuthenticated())
         return;
@@ -30,13 +31,14 @@ void NICK::execute(int clientFd)
     else if (server.isNicknameTaken(_nickname)) // if taken
         target->queueBuffer(SEND, ERR_NICKNAMEINUSE(target, _nickname));
     else
-        target->setNickname(_nickname); // set nickname here. not sure if i need to send back reply
-
-    // check if registration is completed here
-    if (target->isRegistered())
     {
-        target->queueBuffer(SEND, RPL_WELCOME(target));
+        oldNickname = target->getNickname();
+        target->setNickname(_nickname);
+        target->queueBuffer(SEND, RPL_NICK(target, oldNickname));
     }
+
+    if (target->isWelcomeRequired())
+        queueWelcomeMessage(target, server.getUpTime());
 }
 
 bool NICK::_isValidNickname(const std::string &newNick) const

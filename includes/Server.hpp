@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/01 14:10:52 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/03 19:55:11 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,14 @@
 
 #define INVALID_USAGE "Invalid usage! ./ircserv <port> <password>"
 #define FAIL_TO_INIT_SOCKET "Failed to initialize socket!"
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 class CommandFactory; // forward declaration
 
 class Server
 {
 public:
+
     typedef std::vector<struct pollfd> PollFdList;  // <pollfd>
     typedef std::map<int, struct pollfd> PollTable; // <socketfd, pollfd>
     typedef std::map<int, Client *> ClientTable;    // <socketfd, client object>
@@ -79,7 +80,7 @@ private:
     int _acceptConnection(int socketFd);
     void _removeClient(int clientFd);
     void _readRequest(int clientFd);
-    void _processRequests(int clientFd, std::string &requestStr);
+    void _processRequests(int clientFd, Client *target);
     void _sendReply(int clientFd);
 };
 
