@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/04 16:46:55 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/05 11:10:52 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,7 +279,7 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
 {
     if (socketInfo.revents & POLLOUT) // server can write response without blocking
     {
-        std::cout << std::flush;
+        // std::cout << std::flush;
         _sendReply(socketInfo.fd);
     }
     else if (socketInfo.revents & POLLIN) // server can listen request without blocking
