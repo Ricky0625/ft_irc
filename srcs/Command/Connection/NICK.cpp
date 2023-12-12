@@ -1,4 +1,4 @@
-#include "NICK.hpp"
+#include "Connection/NICK.hpp"
 
 // default constructor
 NICK::NICK() : _nickname("") {}

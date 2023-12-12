@@ -1,4 +1,4 @@
-#include "PING.hpp"
+#include "Connection/PING.hpp"
 
 // default constructor
 PING::PING() : _token("") {}

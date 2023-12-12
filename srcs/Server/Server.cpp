@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/12 15:15:57 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/12 16:04:17 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,10 @@ bool Server::isClientAuthenticated(int clientFd)
     return target->isAuthenticated();
 }
 
+/**
+ * @brief Check if a nickname is taken
+ * TODO: not yet check if two names are strictly identical
+*/
 bool Server::isNicknameTaken(const std::string &newNick) const
 {
     for (ClientTable::const_iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -422,6 +426,9 @@ void Server::_removeClient(int clientFd)
 
     if (client != _clients.end())
     {
+        /**
+         * TODO: remove client from all the channels he/she joined
+        */
         delete client->second;    // clean up the client instance
         _clients.erase(client);   // remove from ClientTable
         _stopListening(clientFd); // stop listening from this client

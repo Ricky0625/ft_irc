@@ -6,5 +6,6 @@
 #include "USER.hpp"
 #include "PING.hpp"
 #include "PONG.hpp"
+#include "QUIT.hpp"
 
 #endif

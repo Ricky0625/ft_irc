@@ -1,4 +1,4 @@
-#include "PONG.hpp"
+#include "Connection/PONG.hpp"
 
 // default constructor
 PONG::PONG() : _token("") {}

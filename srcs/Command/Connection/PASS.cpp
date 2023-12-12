@@ -1,4 +1,4 @@
-#include "PASS.hpp"
+#include "Connection/PASS.hpp"
 
 // default constructor
 PASS::PASS() {}

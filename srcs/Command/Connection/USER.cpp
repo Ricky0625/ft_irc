@@ -1,4 +1,4 @@
-#include "USER.hpp"
+#include "Connection/USER.hpp"
 
 // default constructor
 USER::USER() : _username(""), _realname("") {}
