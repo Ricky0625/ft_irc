@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/03 19:55:11 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/12 14:56:22 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ private:
     int _serverFd;
     std::string _password;
     std::string _upTime;
+    time_t _lastPing;
 
     PollFdList _pollList;
     PollTable _pollTable;
@@ -75,6 +76,13 @@ private:
     void _handleSocketEvents(void);
     void _handleServerEvents(const pollfd &socketInfo);
     void _handleClientEvents(const pollfd &socketInfo);
+
+    // timeout management
+    void _checkClientTimeout(void);
+    void _sendPing(int clientFd);
+    void _sendPingToClients(void);
+    void _updateServerLastPing(void);
+    bool _shouldPingClients(void);
 
     // action
     int _acceptConnection(int socketFd);

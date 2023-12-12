@@ -1,7 +1,16 @@
 #include "Client.hpp"
 
 // named constructor
-Client::Client(int fd, const std::string ip) : _fd(fd), _ip(ip), _isRegistered(false), _isAuthenticated(false), _nickname(""), _realname(""), _username(""), _readBuffer(""), _sendBuffer("") {}
+Client::Client(int fd, const std::string ip) :
+    _fd(fd), _ip(ip),
+    _lastPing(std::time(0)),
+    _isRegistered(false), _isAuthenticated(false),
+    _nickname(""), _realname(""), _username(""),
+    _readBuffer(""), _sendBuffer("")
+{
+    (void)_fd;
+    (void)_lastPing;
+}
 
 // destructor
 Client::~Client() {}
@@ -30,7 +39,6 @@ void Client::setUsername(const std::string &name)
 {
     _username = name;
 }
-
 
 bool Client::isRegistered(void)
 {
@@ -93,7 +101,12 @@ std::string Client::getBuffer(BufferType type)
     }
 }
 
-void Client::queueBuffer(BufferType type, const std::string &msg)
+time_t Client::getLastPing(void) const
+{
+    return _lastPing;
+}
+
+void Client::enqueueBuffer(BufferType type, const std::string &msg)
 {
     switch (type)
     {
@@ -117,6 +130,18 @@ void Client::clearBuffer(BufferType type)
         _sendBuffer.clear();
         break;
     }
+}
+
+void Client::updateLastPing()
+{
+    _lastPing = std::time(0);
+}
+
+bool Client::isTimeout()
+{
+    time_t timeNow = std::time(0);
+
+    return ((timeNow - _lastPing) > TIMEOUT);
 }
 
 /**

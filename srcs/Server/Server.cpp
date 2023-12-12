@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/05 11:10:52 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/12 15:15:57 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 // default constructor
-Server::Server(const std::string &port, const std::string &password) : _password(password), _cmdFactory(new CommandFactory())
+Server::Server(const std::string &port, const std::string &password) : _password(password), _lastPing(std::time(0)), _cmdFactory(new CommandFactory())
 {
     _createServerSocket(port);
     if (_serverFd == -1)
@@ -48,7 +48,7 @@ bool Server::isClientAuthenticated(int clientFd)
 
     if (target == NULL)
         return false;
-    
+
     return target->isAuthenticated();
 }
 
@@ -87,12 +87,17 @@ void Server::start(void)
             break;
         }
         _handleSocketEvents();
+
+        // timeout management here
+        if (_shouldPingClients())
+            _sendPingToClients();
+        _checkClientTimeout();
     }
 }
 
 /**
  * @brief Subscribe an event for a client
-*/
+ */
 void Server::subscribeEvent(int clientFd, short event)
 {
     PollTable::iterator target = _pollTable.find(clientFd);
@@ -101,13 +106,18 @@ void Server::subscribeEvent(int clientFd, short event)
         return;
 
     struct pollfd &socketInfo = target->second;
+
+    // prevent redundant subscription of events
+    if (socketInfo.events & event)
+        return;
+
     socketInfo.events |= event;
     _updatePollList();
 }
 
 /**
  * @brief Unsubscribe an event from a designated client's socket event list
-*/
+ */
 void Server::unsubscribeEvent(int clientFd, short event)
 {
     PollTable::iterator target = _pollTable.find(clientFd);
@@ -116,6 +126,10 @@ void Server::unsubscribeEvent(int clientFd, short event)
         return;
 
     struct pollfd &socketInfo = target->second;
+
+    if ((socketInfo.events & event) == 0)
+        return;
+
     socketInfo.events &= ~event;
     _updatePollList();
 }
@@ -123,7 +137,7 @@ void Server::unsubscribeEvent(int clientFd, short event)
 /**
  * @brief Find a client based on their fd from the client table
  * @return NULL if not found. Pointer to that client object if found.
-*/
+ */
 Client *Server::getClient(int clientFd) const
 {
     ClientTable::const_iterator client = _clients.find(clientFd);
@@ -170,7 +184,7 @@ void Server::_updateUpTime()
 {
     std::time_t currentTime = std::time(NULL);
     std::tm *localTime = std::localtime(&currentTime);
-    
+
     char buffer[80];
     std::strftime(buffer, sizeof(buffer), "%m-%d-%Y %H:%M:%S", localTime);
 
@@ -195,6 +209,7 @@ void Server::_addSocketToPollTable(int socketToMonitor, short events)
     socketInfo.events = events;
     _pollTable[socketToMonitor] = socketInfo;
     _updatePollList(); // update the _pollList
+    Display::displayServerAction(socketToMonitor, "Add new client. `Server::_addSocketToPollTable`");
 }
 
 /**
@@ -211,7 +226,7 @@ void Server::_updatePollList(void)
  * @brief Stop listening to a client
  * @details
  * Close the client fd and erase the client from the pollTable.
-*/
+ */
 void Server::_stopListening(int clientFd)
 {
     PollTable::iterator socket = _pollTable.find(clientFd);
@@ -261,13 +276,13 @@ static void pollEventErrorMessage(short event, int clientFd)
     switch (event)
     {
     case POLLERR:
-        std::cout << BOLD_RED "An error has occurred on Client " << clientFd << ". Disconnectin..." RESET << std::endl;
+        Display::displayServerError(clientFd, "An error has occured. `POLLERR`");
         break;
     case POLLHUP:
-        std::cout << BOLD_RED "Client " << clientFd << " hung up on us. Disconnecting..." << std::endl;
+        Display::displayServerError(clientFd, "Client hang up. `POLLHUP`");
         break;
     case POLLNVAL:
-        std::cout << BOLD_RED "Client " << clientFd << "'s socket not initialized properly. Disconnecting..." RESET << std::endl;
+        Display::displayServerError(clientFd, "Client socket not initialized properly. `POLLNVAL`");
         break;
     }
 }
@@ -279,7 +294,6 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
 {
     if (socketInfo.revents & POLLOUT) // server can write response without blocking
     {
-        // std::cout << std::flush;
         _sendReply(socketInfo.fd);
     }
     else if (socketInfo.revents & POLLIN) // server can listen request without blocking
@@ -301,6 +315,70 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
         pollEventErrorMessage(POLLNVAL, socketInfo.fd);
         _removeClient(socketInfo.fd);
     }
+}
+
+/**
+ * @brief Check if any of the client timeout. If so, remove them.
+ * @details
+ * Iterate through each of the client to check if their last ping exceeds the timeout.
+ * If so, push to a list. This is to prevent we modifying the map while iterating through it.
+ * Lastly, iterate through the list and remove the client using their socketfd.
+ */
+void Server::_checkClientTimeout(void)
+{
+    std::vector<int> toBeRemoved;
+
+    for (ClientTable::iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+        Client *client = it->second;
+        if (client->isTimeout())
+            toBeRemoved.push_back(it->first);
+    }
+
+    for (std::vector<int>::iterator it = toBeRemoved.begin(); it != toBeRemoved.end(); it++)
+        _removeClient(*it);
+}
+
+/**
+ * @brief Send PING to designated socketfd check the liveliness of the client
+*/
+void Server::_sendPing(int clientFd)
+{
+    std::string pingMsg = "PING :" + std::string(HOST) + CRLF;
+    
+    send(clientFd, pingMsg.c_str(), pingMsg.size(), 0);
+}
+
+/**
+ * @brief Send PING to each of the client and update server last ping time
+*/
+void Server::_sendPingToClients(void)
+{
+    for (ClientTable::iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+        _sendPing(it->first);
+        Display::displayServerAction(it->first, "PING! `Server::_sendPingToClients`");
+    }
+    _updateServerLastPing();
+}
+
+/**
+ * @brief Update server's last ping time
+*/
+void Server::_updateServerLastPing(void)
+{
+    _lastPing = std::time(0);
+    Display::displayServerAction(_serverFd, "Server update its last ping time. `Server::_updateServerLastPing`");
+}
+
+/**
+ * @brief Check if the server should ping all the client
+*/
+bool Server::_shouldPingClients(void)
+{
+    time_t timeNow = std::time(0);
+
+    return ((timeNow - _lastPing) > SERVER_PING_TIMEOUT);
 }
 
 /**
@@ -347,7 +425,7 @@ void Server::_removeClient(int clientFd)
         delete client->second;    // clean up the client instance
         _clients.erase(client);   // remove from ClientTable
         _stopListening(clientFd); // stop listening from this client
-        std::cout << "Disconnect client " << clientFd << std::endl;
+        Display::displayServerAction(clientFd, "Removed! `Server::_removeClient`");
     }
 }
 
@@ -364,7 +442,7 @@ void Server::_readRequest(int clientFd)
     if (target == NULL) // no such client
         return;
 
-    bytesRead = recv(clientFd, buffer, BUFFER_SIZE, 0);
+    bytesRead = recv(clientFd, buffer, BUFFER_SIZE - 1, 0);
     if (bytesRead == -1)
     {
         Logger::justLog("recv", &strerror);
@@ -377,8 +455,11 @@ void Server::_readRequest(int clientFd)
         return;
     }
 
+    // null terminated the string
+    buffer[bytesRead] = '\0';
+
     // concat string & process string
-    target->queueBuffer(READ, buffer);
+    target->enqueueBuffer(READ, buffer);
     _processRequests(clientFd, target);
 }
 
@@ -401,19 +482,25 @@ void Server::_processRequests(int clientFd, Client *target)
         singleRequest = readBuffer.substr(0, crlfPos);
         ircMsg = Parser::parseIRCMessage(singleRequest);
 
+        // display incoming message
+        Display::displayIncoming(clientFd, singleRequest);
+
         command = _cmdFactory->recognizeCommand(*this, ircMsg);
         if (command != NULL)
-        {
             command->execute(clientFd);
-            subscribeEvent(clientFd, POLLOUT); // is it ok to subscribe the event in a loop?
-        }
 
         readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
     }
-    
+
+    // subscribe to POLLOUT if send buffer is not empty
+    if (target->getBuffer(SEND).empty() == false)
+        subscribeEvent(clientFd, POLLOUT);
+
+    // if after processing all the request, readBuffer still have something, clear client's read buffer
+    // and enqueue the remaining read buffer
     target->clearBuffer(READ);
     if (!readBuffer.empty())
-        target->queueBuffer(READ, readBuffer);
+        target->enqueueBuffer(READ, readBuffer);
 }
 
 /**
@@ -426,7 +513,7 @@ void Server::_processRequests(int clientFd, Client *target)
  * send function only sent a part of the message, queue send buffer with the
  * remaining message.
  * If after sending the message, the sendbuffer is empty, unsubscribe to POLLOUT.
-*/
+ */
 void Server::_sendReply(int clientFd)
 {
     Client *target = getClient(clientFd);
@@ -437,13 +524,16 @@ void Server::_sendReply(int clientFd)
 
     std::string sendBuffer = target->getBuffer(SEND);
     bytesSent = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
+
+    Display::displayOutgoing(clientFd, sendBuffer.substr(0, bytesSent));
+
     if (bytesSent == -1)
     {
         Logger::justLog("send", &strerror);
         return;
     }
-    
+
     target->clearBuffer(SEND);
-    target->queueBuffer(SEND, sendBuffer.substr(bytesSent));
+    target->enqueueBuffer(SEND, sendBuffer.substr(bytesSent));
     unsubscribeEvent(clientFd, POLLOUT);
 }

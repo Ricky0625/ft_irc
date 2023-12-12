@@ -25,16 +25,16 @@ void NICK::execute(int clientFd)
         return;
 
     if (_nickname.empty())
-        target->queueBuffer(SEND, ERR_NONICKNAMEGIVEN(target));
+        target->enqueueBuffer(SEND, ERR_NONICKNAMEGIVEN(target));
     else if (!_isValidNickname(_nickname)) // if not valid
-        target->queueBuffer(SEND, ERR_ERRONEUSNICKNAME(target, _nickname));
+        target->enqueueBuffer(SEND, ERR_ERRONEUSNICKNAME(target, _nickname));
     else if (server.isNicknameTaken(_nickname)) // if taken
-        target->queueBuffer(SEND, ERR_NICKNAMEINUSE(target, _nickname));
+        target->enqueueBuffer(SEND, ERR_NICKNAMEINUSE(target, _nickname));
     else
     {
         oldNickname = target->getNickname();
         target->setNickname(_nickname);
-        target->queueBuffer(SEND, RPL_NICK(target, oldNickname));
+        target->enqueueBuffer(SEND, RPL_NICK(target, oldNickname));
     }
 
     if (target->isWelcomeRequired())

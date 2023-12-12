@@ -1,9 +1,9 @@
-#include "PING.hpp"
+#include "PONG.hpp"
 
 // default constructor
-PING::PING() : _token("") {}
+PONG::PONG() : _token("") {}
 
-void PING::initialize(Server &server, const IRCMessage &ircMsg)
+void PONG::initialize(Server &server, const IRCMessage &ircMsg)
 {
     ICommand::initialize(server, ircMsg);
 
@@ -15,7 +15,7 @@ void PING::initialize(Server &server, const IRCMessage &ircMsg)
     _token = args[0];
 }
 
-void PING::execute(int clientFd)
+void PONG::execute(int clientFd)
 {
     Server &server = *_server;
     Client *target = server.getClient(clientFd);
@@ -23,6 +23,6 @@ void PING::execute(int clientFd)
     if (target == NULL || !(target->isAuthenticated() && target->isRegistered()))
         return;
 
-    target->enqueueBuffer(SEND, RPL_PONG(target, target->getNickname(), _token));
     target->updateLastPing();
+    Display::displayServerAction(clientFd, "update last ping `PONG::execute`");
 }

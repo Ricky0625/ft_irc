@@ -33,9 +33,9 @@ void USER::execute(int clientFd)
         return;
 
     if (target->isRegistered()) // if already registered
-        target->queueBuffer(SEND, ERR_ALREADYREGISTERED(target));
+        target->enqueueBuffer(SEND, ERR_ALREADYREGISTERED(target));
     else if (getArgs().size() < 3)
-        target->queueBuffer(SEND, ERR_NEEDMOREPARAMS(target, _ircMsg.command));
+        target->enqueueBuffer(SEND, ERR_NEEDMOREPARAMS(target, _ircMsg.command));
     else
     {
         target->setUsername(_username);

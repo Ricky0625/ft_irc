@@ -29,20 +29,26 @@ public:
     std::string getRealname(void) const;
     std::string getUsername(void) const;
     std::string getBuffer(BufferType type);
+    time_t getLastPing(void) const;
 
     // checking
     void checkRegistered(void);
     bool isWelcomeRequired(void);
 
     // buffer management
-    void queueBuffer(BufferType type, const std::string &msg);
+    void enqueueBuffer(BufferType type, const std::string &msg);
     void clearBuffer(BufferType type);
+
+    // timeout management
+    void updateLastPing(void);
+    bool isTimeout(void);
 
     std::string toString(void);
 
 private:
     int _fd;
     std::string _ip;
+    time_t _lastPing;
 
     // booleans
     bool _isRegistered;

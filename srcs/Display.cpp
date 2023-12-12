@@ -25,21 +25,29 @@ void Display::displayServerInfo(const std::string &port, const std::string &pass
 
 void Display::displayIncoming(int fromFd, const std::string &msg)
 {
-    // size_t crlfPos = msg.find(CRLF);
-    // std::string incoming;
-
-    // std::cout << BOLD_PURPLE "[CLIENT] " << fromFd << " << " << msg << RESET << std::endl;
-    (void)fromFd;
-    std::cout << std::endl << BOLD_PURPLE << msg << RESET;
+    std::cout << BOLD_PURPLE "[CLIENT] " << std::setw(4) << fromFd << " << " << msg << RESET << std::endl;
 }
 
 void Display::displayOutgoing(int toFd, const std::string &msg)
 {
-    // std::istringstream buf(msg);
-    // std::string line;
+    size_t crlfPos;
+    std::string singleReply;
+    std::string copy(msg);
 
-    // while (getline(buf, line))
-        // std::cout << BOLD_CYAN "[SERVER] " << toFd << " >> " << line << RESET << std::endl;
-    (void)toFd;
-    std::cout << std::endl << BOLD_CYAN << msg << RESET;
+    while ((crlfPos = copy.find(CRLF)) != std::string::npos)
+    {
+        singleReply = copy.substr(0, crlfPos);
+        std::cout << BOLD_CYAN "[SERVER] " << std::setw(4) << toFd << " >> " << singleReply << RESET << std::endl;
+        copy = copy.substr(crlfPos + strlen(CRLF));
+    }
+}
+
+void Display::displayServerAction(int targetFd, const std::string &msg)
+{
+    std::cout << BOLD_YELLOW "[ACTION] " << std::setw(4) << targetFd << " :: " << msg << RESET << std::endl;
+}
+
+void Display::displayServerError(int targetFd, const std::string &msg)
+{
+    std::cout << BOLD_RED "[" << std::setw(6) << "ERROR" << "] " << std::setw(4) << targetFd << " @@ " << msg << RESET << std::endl;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irclib.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/03 20:12:11 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/12 15:11:00 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string.h>
 #include <ctime>
 #include <sstream>
+#include <iomanip>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -44,5 +45,7 @@
 #define SERVER_NAME "capygroove"
 #define HOST "localhost"
 #define VERSION "v1.0.0"
+#define TIMEOUT 180 // 3 mins
+#define SERVER_PING_TIMEOUT 30
 
 #endif

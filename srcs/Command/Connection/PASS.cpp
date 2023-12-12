@@ -25,11 +25,11 @@ void PASS::execute(int clientFd)
         return;
 
     if (getArgs().size() < 1)
-        target->queueBuffer(SEND, ERR_NEEDMOREPARAMS(target, _ircMsg.command));
+        target->enqueueBuffer(SEND, ERR_NEEDMOREPARAMS(target, _ircMsg.command));
     else if (target->isAuthenticated() && target->isRegistered())
-        target->queueBuffer(SEND, ERR_ALREADYREGISTERED(target));
+        target->enqueueBuffer(SEND, ERR_ALREADYREGISTERED(target));
     else if (!server.isCorrectPassword(_password))
-        target->queueBuffer(SEND, ERR_PASSWDMISMATCH(target));
+        target->enqueueBuffer(SEND, ERR_PASSWDMISMATCH(target));
     else
         target->setAuthenticated(true);
 }

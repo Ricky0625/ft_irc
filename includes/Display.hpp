@@ -16,8 +16,8 @@ public:
     static void displayServerInfo(const std::string &port, const std::string &pass, const std::string &upTime);
     static void displayIncoming(int fromFd, const std::string &msg);
     static void displayOutgoing(int toFd, const std::string &msg);
-
-private:
+    static void displayServerAction(int targetFd, const std::string &msg);
+    static void displayServerError(int targetFd, const std::string &msg);
 };
 
 #endif
