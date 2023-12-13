@@ -30,6 +30,7 @@ public:
     std::string getUsername(void) const;
     std::string getBuffer(BufferType type);
     time_t getLastPing(void) const;
+    int getFd(void) const;
 
     // checking
     void checkRegistered(void);

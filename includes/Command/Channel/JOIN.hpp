@@ -16,6 +16,8 @@ public:
 private:
     std::vector<std::string> _chanNames;
     std::vector<std::string> _chanPass;
+
+    void _broadcastNewMember(Client *newMember, Channel *channel);
 };
 
 #endif

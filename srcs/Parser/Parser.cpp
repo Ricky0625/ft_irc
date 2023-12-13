@@ -8,8 +8,9 @@ Parser::~Parser() {}
 
 /**
  * @brief Split string by delimeter
+ * @attention set mode to INCLUDE_EMPTY if want to include empty string
  */
-void Parser::splitStr(const std::string &str, Splitted &vect, const std::string &delimeter)
+void Parser::splitStr(const std::string &str, Splitted &vect, const std::string &delimeter, SplittingMode mode = EXCLUDE_EMPTY)
 {
     size_t pos = str.find(delimeter);
     size_t initialPos = 0;
@@ -19,18 +20,18 @@ void Parser::splitStr(const std::string &str, Splitted &vect, const std::string 
     {
         std::string substring = str.substr(initialPos, pos - initialPos);
         if (!substring.empty())
-        {
             vect.push_back(substring);
-        }
+        else if (substring.empty() && mode == INCLUDE_EMPTY)
+            vect.push_back(substring);
         initialPos = pos + delimeter.size();
         pos = str.find(delimeter, initialPos);
     }
 
     std::string lastSubstring = str.substr(initialPos, std::min(pos, str.size()) - initialPos + 1);
     if (!lastSubstring.empty())
-    {
         vect.push_back(lastSubstring);
-    }
+    else if (lastSubstring.empty() && mode == INCLUDE_EMPTY)
+        vect.push_back(lastSubstring);
 }
 
 /**
@@ -51,6 +52,7 @@ IRCMessage Parser::parseIRCMessage(const std::string &str)
     size_t trailingPos;
     std::string msgStr(str);
 
+    msg.hasTrailing = false;
     msg.arguments.clear();
     // Check for prefix
     if (msgStr.at(0) == ':')
@@ -84,6 +86,7 @@ IRCMessage Parser::parseIRCMessage(const std::string &str)
     {
         msg.trailing = msgStr.substr(trailingPos + 1);
         msgStr = msgStr.substr(0, trailingPos);
+        msg.hasTrailing = true;
     }
 
     // Get the arguments
@@ -107,4 +110,24 @@ void Parser::showMessage(const IRCMessage &msg)
     if (!msg.trailing.empty())
         std::cout << "[TRAIL  ] " << msg.trailing << std::endl;
     std::cout << "= = = = = = = = = = = = = = = = = =" << std::endl;
+}
+
+std::string Parser::getTimeNow(void)
+{
+    std::time_t currentTime = std::time(NULL);
+    std::tm *localTime = std::localtime(&currentTime);
+
+    char buffer[80];
+    std::strftime(buffer, sizeof(buffer), "%m-%d-%Y %H:%M:%S", localTime);
+
+    return std::string(buffer);
+}
+
+std::string Parser::getUnixTimeStamp(void)
+{
+    time_t currentTime = std::time(NULL);
+
+    std::string timestampString = std::to_string(currentTime);
+
+    return timestampString;
 }

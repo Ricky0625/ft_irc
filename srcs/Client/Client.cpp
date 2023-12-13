@@ -106,6 +106,11 @@ time_t Client::getLastPing(void) const
     return _lastPing;
 }
 
+int Client::getFd(void) const
+{
+    return _fd;
+}
+
 void Client::enqueueBuffer(BufferType type, const std::string &msg)
 {
     switch (type)

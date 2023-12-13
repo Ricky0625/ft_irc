@@ -15,7 +15,7 @@ void ICommand::initialize(Server &server, const IRCMessage &ircMsg)
 /**
  * @getter
  * @brief get prefix
-*/
+ */
 std::string ICommand::getPrefix() const
 {
     return _ircMsg.prefix;
@@ -24,7 +24,7 @@ std::string ICommand::getPrefix() const
 /**
  * @getter
  * @brief get command name
-*/
+ */
 std::string ICommand::getCommand() const
 {
     return _ircMsg.command;
@@ -33,16 +33,21 @@ std::string ICommand::getCommand() const
 /**
  * @getter
  * @brief get argument list
-*/
+ */
 std::vector<std::string> ICommand::getArgs() const
 {
     return _ircMsg.arguments;
 }
 
+bool ICommand::getHasTrailing() const
+{
+    return _ircMsg.hasTrailing;
+}
+
 /**
  * @getter
  * @brief get trailing
-*/
+ */
 std::string ICommand::getTrailing() const
 {
     return _ircMsg.trailing;
@@ -63,5 +68,16 @@ void ICommand::queueWelcomeMessage(Client *client, const std::string &upTime)
      * TODO:
      * 1. complete RPL_MYINFO
      * 2. complete RPL_MYINFO
-    */
+     */
+}
+
+void ICommand::queueJoinWelcomeMessage(Client *client, Channel *channel)
+{
+    if (channel->getTopic().empty() == false)
+    {
+        client->enqueueBuffer(SEND, RPL_TOPIC(client, channel));
+        client->enqueueBuffer(SEND, RPL_TOPICWHOTIME(client, channel));
+    }
+    client->enqueueBuffer(SEND, RPL_NAMREPLY(client, channel));
+    client->enqueueBuffer(SEND, RPL_ENDOFNAMES(client, channel));
 }

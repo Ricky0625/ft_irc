@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/12 14:56:22 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/13 21:05:13 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "irclib.h"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "CommandFactory.hpp"
 #include "Display.hpp"
 
@@ -23,15 +24,15 @@
 #define BUFFER_SIZE 4096
 
 class CommandFactory; // forward declaration
+// class Channel;        // forward declaration
 
 class Server
 {
 public:
-
-    typedef std::vector<struct pollfd> PollFdList;  // <pollfd>
-    typedef std::map<int, struct pollfd> PollTable; // <socketfd, pollfd>
-    typedef std::map<int, Client *> ClientTable;    // <socketfd, client object>
-    // typedef std::map<std::string, Channel *> ChannelTable; // <channel name, channel object>
+    typedef std::vector<struct pollfd> PollFdList;         // <pollfd>
+    typedef std::map<int, struct pollfd> PollTable;        // <socketfd, pollfd>
+    typedef std::map<int, Client *> ClientTable;           // <socketfd, client object>
+    typedef std::map<std::string, Channel *> ChannelTable; // <channel name, channel object>
 
     Server(const std::string &port, const std::string &password);
     ~Server(void);
@@ -52,6 +53,10 @@ public:
     Client *getClient(int clientFd) const;
     std::string getUpTime(void) const;
 
+    // channel management
+    Channel *addNewChannel(const std::string &channelName);
+    Channel *getChannel(const std::string &channelName);
+
 private:
     int _serverFd;
     std::string _password;
@@ -61,6 +66,7 @@ private:
     PollFdList _pollList;
     PollTable _pollTable;
     ClientTable _clients;
+    ChannelTable _channels;
     CommandFactory *_cmdFactory;
 
     // initialization

@@ -13,9 +13,9 @@ CommandFactory::CommandFactory()
     // _commands["QUIT"] = new QUIT();
 
     // channel operations
-    // _commands["JOIN"] = new JOIN();
+    _commands["JOIN"] = new JOIN();
     // _commands["PART"] = new PART();
-    // _commands["TOPIC"] = new TOPIC();
+    _commands["TOPIC"] = new TOPIC();
     // _commands["NAMES"] = new NAMES();
     // _commands["LIST"] = new LIST();
     // _commands["INVITE"] = new INVITE();

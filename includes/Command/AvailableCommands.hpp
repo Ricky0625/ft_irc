@@ -8,4 +8,7 @@
 #include "PONG.hpp"
 #include "QUIT.hpp"
 
+#include "JOIN.hpp"
+#include "TOPIC.hpp"
+
 #endif

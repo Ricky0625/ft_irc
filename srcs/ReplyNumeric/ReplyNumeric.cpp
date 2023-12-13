@@ -1,50 +1,5 @@
 #include "ReplyNumeric.hpp"
 
-static std::string SourceMessage(const std::string &code, Client *client)
-{
-    const std::string &nickname = client->getNickname();
-
-    return ":" + std::string(HOST) + " " + code + " " + (nickname.empty() ? "*" : nickname); // does not have space at the end!
-}
-
-static std::string ClientHeader(Client *client, const std::string &oldNickname)
-{
-    return ":" + (oldNickname.empty() ? client->getNickname() : oldNickname) + "!" + client->getUsername() + "@" + std::string(HOST);
-}
-
-static std::string MessageTrailing(const std::string &trailing)
-{
-    return " :" + trailing + CRLF;
-}
-
-static std::string SimpleMessage(const std::string &code, Client *client, const std::string &message)
-{
-    return SourceMessage(code, client) + MessageTrailing(message);
-}
-
-static std::string ErrorMessage(const std::string &code, Client *client, const std::string &command, const std::string &message)
-{
-    // add nickname before command
-    const std::string &nickname = client->getNickname();
-
-    return SourceMessage(code, client) + (nickname.empty() ? "*" : nickname) + (command.empty() ? "" : " ") + command + MessageTrailing(message);
-}
-
-static std::string NicknameError(const std::string &code, Client *client, const std::string &newNickname, const std::string &message)
-{
-    return SourceMessage(code, client) + " " + newNickname + MessageTrailing(message);
-}
-
-std::string RPL_NICK(Client *client, const std::string &oldNickname)
-{
-    return ClientHeader(client, oldNickname) + " NICK " + client->getNickname() + CRLF;
-}
-
-std::string RPL_PONG(Client *client, const std::string &oldNickname, const std::string &token)
-{
-    return ClientHeader(client, oldNickname) + " PONG :" + token + CRLF;
-}
-
 // 001
 std::string RPL_WELCOME(Client *client)
 {
@@ -79,6 +34,45 @@ std::string RPL_MYINFO(Client *client)
     return ":" + std::string(HOST) + " 004 " + (nickname.empty() ? "*" : nickname) + " " + std::string(HOST) + " " + std::string(VERSION) + " io kost k" + CRLF;
 }
 
+// 331
+std::string RPL_NOTOPIC(Client *client, Channel *channel)
+{
+    return ChannelSimpleMessage("331", client, channel->getName(), "No topic is set");
+}
+
+// 332
+std::string RPL_TOPIC(Client *client, Channel *channel)
+{
+    return ChannelSimpleMessage("332", client, channel->getName(), channel->getTopic());
+}
+
+// 333
+std::string RPL_TOPICWHOTIME(Client *client, Channel *channel)
+{
+    return SourceMessage("333", client) + " " + channel->getName() + " " + channel->getTopicSetBy() + " " + channel->getTopicSetAt() + CRLF;
+}
+
+// 353
+std::string RPL_NAMREPLY(Client *client, Channel *channel)
+{
+    /**
+     * TODO: channel symbol '='
+    */
+    return SourceMessage("353", client) + " = " + channel->getName() + MessageTrailing(channel->getAllMembersAsString());
+}
+
+// 366
+std::string RPL_ENDOFNAMES(Client *client, Channel *channel)
+{
+    return ChannelSimpleMessage("366", client, channel->getName(), "End of /NAMES list");
+}
+
+// 403
+std::string ERR_NOSUCHCHANNEL(Client *client, const std::string &channelName)
+{
+    return ChannelSimpleMessage("403", client, channelName, "No such channel");
+}
+
 // 431
 std::string ERR_NONICKNAMEGIVEN(Client *client)
 {
@@ -95,6 +89,12 @@ std::string ERR_ERRONEUSNICKNAME(Client *client, const std::string &newNick)
 std::string ERR_NICKNAMEINUSE(Client *client, const std::string &newNick)
 {
     return NicknameError("433", client, newNick, "Nickname is already in use");
+}
+
+// 442
+std::string ERR_NOTONCHANNEL(Client *client, Channel *channel)
+{
+    return ChannelSimpleMessage("442", client, channel->getName(), "You're not on that channel");
 }
 
 // 461
