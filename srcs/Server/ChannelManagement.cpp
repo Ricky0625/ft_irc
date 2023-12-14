@@ -44,3 +44,22 @@ void Server::removeChannel(const std::string &channelName)
     delete channel->second;
     _channels.erase(channelName);
 }
+
+void Server::removeMemberFromChannels(const std::string &nickname)
+{
+    Channel *targetChannel;
+    std::vector<std::string> emptyChannel;
+
+    for (ChannelTable::iterator it = _channels.begin(); it != _channels.end(); it++)
+    {
+        targetChannel = it->second;
+        targetChannel->removeMember(nickname);
+
+        if (targetChannel->getMemberTotal() == 0)
+            emptyChannel.push_back(targetChannel->getName());
+    }
+
+    // remove empty channel
+    for (size_t i = 0; i < emptyChannel.size(); i++)
+        removeChannel(emptyChannel[i]);
+}

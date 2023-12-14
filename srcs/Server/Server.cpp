@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/14 13:30:11 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/14 18:15:31 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,17 +305,17 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
     else if (socketInfo.revents & POLLERR) // an error has occurred on this socket
     {
         pollEventErrorMessage(POLLERR, socketInfo.fd);
-        _removeClient(socketInfo.fd, ERR_POLLERR); // ERR_POLLERR
+        removeClient(socketInfo.fd, ERR_POLLERR); // ERR_POLLERR
     }
     else if (socketInfo.revents & POLLHUP) // the remote side of the connection hung up
     {
         pollEventErrorMessage(POLLHUP, socketInfo.fd);
-        _removeClient(socketInfo.fd, ERR_POLLHUP); // ERR_POLLHUP
+        removeClient(socketInfo.fd, ERR_POLLHUP); // ERR_POLLHUP
     }
     else if (socketInfo.revents & POLLNVAL) // not sure if this will ever happen. this means that there's something wrong with the socket initialization
     {
         pollEventErrorMessage(POLLNVAL, socketInfo.fd);
-        _removeClient(socketInfo.fd, ERR_POLLNVAL); // ERR_POLLNVAL
+        removeClient(socketInfo.fd, ERR_POLLNVAL); // ERR_POLLNVAL
     }
 }
 
@@ -338,7 +338,7 @@ void Server::_checkClientTimeout(void)
     }
 
     for (std::vector<int>::iterator it = toBeRemoved.begin(); it != toBeRemoved.end(); it++)
-        _removeClient(*it, PING_TIMEOUT); // PING_TIMEOUT
+        removeClient(*it, PING_TIMEOUT); // PING_TIMEOUT
 }
 
 /**
@@ -418,19 +418,16 @@ int Server::_acceptConnection(int socketFd)
 /**
  * @brief Disconnect a client and remove them from the ClientTable.
  */
-void Server::_removeClient(int clientFd, QuitReason reason)
+void Server::removeClient(int clientFd, QuitReason reason)
 {
     ClientTable::iterator client = _clients.find(clientFd);
 
     (void)reason;
     if (client != _clients.end())
     {
-        /**
-         * TODO: remove client from all the channels he/she joined
-         */
-        delete client->second;    // clean up the client instance
-        _clients.erase(client);   // remove from ClientTable
-        _stopListening(clientFd); // stop listening from this client
+        delete client->second;                                   // clean up the client instance
+        _clients.erase(client);                                  // remove from ClientTable
+        _stopListening(clientFd);                                // stop listening from this client
         Display::displayServerAction(clientFd, "Removed! `Server::_removeClient`");
     }
 }
@@ -452,12 +449,12 @@ void Server::_readRequest(int clientFd)
     if (bytesRead == -1)
     {
         Logger::justLog("recv", &strerror);
-        _removeClient(clientFd, RECV_FAILED); // RECV_FAILED
+        removeClient(clientFd, RECV_FAILED); // RECV_FAILED
         return;
     }
     else if (bytesRead == 0) // client disconnected
     {
-        _removeClient(clientFd, DISCONNECTED); // DISCONNECTED
+        removeClient(clientFd, DISCONNECTED); // DISCONNECTED
         return;
     }
 

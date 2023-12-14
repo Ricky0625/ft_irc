@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/14 14:45:25 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/14 17:55:52 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,9 @@ public:
     Channel *getChannel(const std::string &channelName);
     ChannelTable getChannels(void) const;
     void removeChannel(const std::string &channelName);
+    void removeMemberFromChannels(const std::string &nickname);
+
+    void removeClient(int clientFd, QuitReason reason);
 
 private:
     int _serverFd;
@@ -103,7 +106,6 @@ private:
 
     // action
     int _acceptConnection(int socketFd);
-    void _removeClient(int clientFd, QuitReason reason);
     void _readRequest(int clientFd);
     void _processRequests(int clientFd, Client *target);
     void _sendReply(int clientFd);

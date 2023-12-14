@@ -22,6 +22,7 @@ std::string RPL_NICK(Client *client, const std::string &oldNickname);
 std::string RPL_PONG(Client *client, const std::string &oldNickname, const std::string &token);
 std::string RPL_JOIN(Client *newMember, Channel *channel);
 std::string RPL_PART(Client *client, Channel *channel, const std::string &reason);
+std::string RPL_QUIT(Client *client, const std::string &reason);
 
 // reply numerics
 std::string RPL_WELCOME(Client *client);                                    // 001

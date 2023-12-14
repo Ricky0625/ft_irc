@@ -10,7 +10,7 @@ CommandFactory::CommandFactory()
     _commands["PING"] = new PING();
     _commands["PONG"] = new PONG();
     // _commands["OPER"] = new OPER();
-    // _commands["QUIT"] = new QUIT();
+    _commands["QUIT"] = new QUIT();
 
     // channel operations
     _commands["JOIN"] = new JOIN();

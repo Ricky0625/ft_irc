@@ -15,6 +15,9 @@ public:
 
 private:
     std::string _msg;
+
+    void _sayGoodbyeToChannels(Client *client);
+    void _broadcastMemberQuit(Client *client, Channel *channel);
 };
 
 #endif

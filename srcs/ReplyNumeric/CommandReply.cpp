@@ -26,3 +26,8 @@ std::string RPL_PART(Client *member, Channel *channel, const std::string &reason
 
     return ClientHeader(member, nickname) + " PART " + channelName + (reason.empty() ? "" + std::string(CRLF) : MessageTrailing(reason));
 }
+
+std::string RPL_QUIT(Client *client, const std::string &reason)
+{
+    return ClientHeader(client, client->getNickname()) + " QUIT" + MessageTrailing("Quit: " + reason);
+}
