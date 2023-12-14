@@ -29,6 +29,9 @@ std::string RPL_YOURHOST(Client *client);                                   // 0
 std::string RPL_CREATED(Client *client, const std::string &upTime);         // 003
 std::string RPL_MYINFO(Client *client);                                     // 004
 std::string RPL_ISUPPORT();                                                 // 005
+std::string RPL_LISTSTART(Client *client);                                  // 321
+std::string RPL_LIST(Client *client, Channel *channel);                     // 322
+std::string RPL_LISTEND(Client *client);                                    // 323
 std::string RPL_NOTOPIC(Client *client, Channel *channel);                  // 331
 std::string RPL_TOPIC(Client *client, Channel *channel);                    // 332
 std::string RPL_TOPICWHOTIME(Client *client, Channel *channel);             // 333

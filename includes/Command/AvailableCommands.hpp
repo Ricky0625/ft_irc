@@ -12,5 +12,6 @@
 #include "PART.hpp"
 #include "TOPIC.hpp"
 #include "NAMES.hpp"
+#include "LIST.hpp"
 
 #endif

@@ -21,7 +21,7 @@ std::string RPL_CREATED(Client *client, const std::string &upTime)
      * TODO:
      * 1. Available user modes
      * 2. Available channel modes
-    */
+     */
     std::string createdMsg = "This server was created " + upTime;
     return SimpleMessage("003", client, createdMsg);
 }
@@ -32,6 +32,24 @@ std::string RPL_MYINFO(Client *client)
     std::string nickname = client->getNickname();
 
     return ":" + std::string(HOST) + " 004 " + (nickname.empty() ? "*" : nickname) + " " + std::string(HOST) + " " + std::string(VERSION) + " io kost k" + CRLF;
+}
+
+// 321
+std::string RPL_LISTSTART(Client *client)
+{
+    return SourceMessage("321", client) + " Channel :Users  Name" + CRLF;
+}
+
+// 322
+std::string RPL_LIST(Client *client, Channel *channel)
+{
+    return SourceMessage("322", client) + " " + channel->getName() + " " + std::to_string(channel->getMemberTotal()) + MessageTrailing(channel->getTopic());
+}
+
+// 323
+std::string RPL_LISTEND(Client *client)
+{
+    return SourceMessage("323", client) + MessageTrailing(":End of /LIST");
 }
 
 // 331
@@ -57,7 +75,7 @@ std::string RPL_NAMREPLY(Client *client, Channel *channel)
 {
     /**
      * TODO: channel symbol '='
-    */
+     */
     return SourceMessage("353", client) + " = " + channel->getName() + MessageTrailing(channel->getAllMembersAsString());
 }
 
