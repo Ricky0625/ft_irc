@@ -28,3 +28,14 @@ Channel *Server::getChannel(const std::string &channelName)
 
     return target->second;
 }
+
+void Server::removeChannel(const std::string &channelName)
+{
+    ChannelTable::iterator channel = _channels.find(channelName);
+
+    if (channel == _channels.end())
+        return;
+
+    delete channel->second;
+    _channels.erase(channelName);
+}

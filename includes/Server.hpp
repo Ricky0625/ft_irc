@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/13 21:05:13 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:37:49 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,16 @@ class CommandFactory; // forward declaration
 class Server
 {
 public:
+    typedef enum QuitReason
+    {
+        DISCONNECTED,
+        PING_TIMEOUT,
+        ERR_POLLERR,
+        ERR_POLLHUP,
+        ERR_POLLNVAL,
+        RECV_FAILED,
+    } QuitReason;
+
     typedef std::vector<struct pollfd> PollFdList;         // <pollfd>
     typedef std::map<int, struct pollfd> PollTable;        // <socketfd, pollfd>
     typedef std::map<int, Client *> ClientTable;           // <socketfd, client object>
@@ -56,6 +66,7 @@ public:
     // channel management
     Channel *addNewChannel(const std::string &channelName);
     Channel *getChannel(const std::string &channelName);
+    void removeChannel(const std::string &channelName);
 
 private:
     int _serverFd;
@@ -92,7 +103,7 @@ private:
 
     // action
     int _acceptConnection(int socketFd);
-    void _removeClient(int clientFd);
+    void _removeClient(int clientFd, QuitReason reason);
     void _readRequest(int clientFd);
     void _processRequests(int clientFd, Client *target);
     void _sendReply(int clientFd);

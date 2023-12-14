@@ -19,6 +19,7 @@ public:
     std::string getTopicSetAt(void) const;
     std::string getAllMembersAsString(void) const;
     MemberTable getMembers(void) const;
+    int getMemberTotal(void) const;
 
     // setters
     void setPassword(const std::string &password);
@@ -28,6 +29,8 @@ public:
 
     // member management
     bool addMember(Client *client);
+    void removeMember(const std::string &nickname);
+    void removeAllMembers(void);
     ChannelMember *getMember(Client *target);
 
 private:

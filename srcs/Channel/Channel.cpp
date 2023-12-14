@@ -4,11 +4,14 @@
 Channel::Channel(const std::string &name) : _name(name), _password("") {}
 
 // destructor
-Channel::~Channel() {}
+Channel::~Channel()
+{
+    removeAllMembers();
+}
 
 /**
  * @brief get channel name
-*/
+ */
 std::string Channel::getName(void) const
 {
     return _name;
@@ -16,7 +19,7 @@ std::string Channel::getName(void) const
 
 /**
  * @brief get channel topic
-*/
+ */
 std::string Channel::getTopic(void) const
 {
     return _topic;
@@ -43,11 +46,11 @@ std::string Channel::getAllMembersAsString(void) const
         /**
          * TODO:
          * 1. Check their highest channel membership prefix and append to it
-         * 
+         *
          * Idea:
          * With multiple if else to check if a prefix exists, from the lowest to highest
-        */
-       membersStr += clientInfo->getNickname() + " ";
+         */
+        membersStr += clientInfo->getNickname() + " ";
     }
 
     return membersStr;
@@ -58,9 +61,14 @@ Channel::MemberTable Channel::getMembers(void) const
     return _members;
 }
 
+int Channel::getMemberTotal(void) const
+{
+    return _members.size();
+}
+
 /**
  * @brief set channel password
-*/
+ */
 void Channel::setPassword(const std::string &password)
 {
     _password = password;
@@ -68,7 +76,7 @@ void Channel::setPassword(const std::string &password)
 
 /**
  * @brief set channel topic
-*/
+ */
 void Channel::setTopic(const std::string &topic)
 {
     std::cout << "set topic" << std::endl;
@@ -89,16 +97,35 @@ void Channel::updateTopicSetAt(void)
 /**
  * @brief Add member to channel
  * @return true if added succesful. false if member already existed.
-*/
+ */
 bool Channel::addMember(Client *client)
 {
     const std::string &nickname = client->getNickname();
 
     if (_members.find(nickname) != _members.end())
         return false;
-    
+
     _members[nickname] = new ChannelMember(client);
     return true;
+}
+
+
+void Channel::removeMember(const std::string &nickname)
+{
+    MemberTable::iterator member = _members.find(nickname);
+
+    if (member == _members.end())
+        return;
+    
+    delete member->second; // should be fine. just remove ChannelMember not Client
+    _members.erase(nickname);
+}
+
+void Channel::removeAllMembers(void)
+{
+    for (MemberTable::iterator it = _members.begin(); it != _members.end(); it++)
+        delete it->second;
+    _members.clear();
 }
 
 ChannelMember *Channel::getMember(Client *target)

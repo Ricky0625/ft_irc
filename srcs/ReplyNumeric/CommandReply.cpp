@@ -18,3 +18,11 @@ std::string RPL_JOIN(Client *newMember, Channel *channel)
 
     return ClientHeader(newMember, nickname) + " JOIN " + channelName + CRLF;
 }
+
+std::string RPL_PART(Client *member, Channel *channel, const std::string &reason)
+{
+    const std::string &nickname = member->getNickname();
+    const std::string &channelName = channel->getName();
+
+    return ClientHeader(member, nickname) + " PART " + channelName + (reason.empty() ? "" + std::string(CRLF) : MessageTrailing(reason));
+}

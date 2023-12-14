@@ -10,7 +10,7 @@ Parser::~Parser() {}
  * @brief Split string by delimeter
  * @attention set mode to INCLUDE_EMPTY if want to include empty string
  */
-void Parser::splitStr(const std::string &str, Splitted &vect, const std::string &delimeter, SplittingMode mode = EXCLUDE_EMPTY)
+void Parser::splitStr(const std::string &str, Splitted &vect, const std::string &delimeter, SplittingMode mode)
 {
     size_t pos = str.find(delimeter);
     size_t initialPos = 0;

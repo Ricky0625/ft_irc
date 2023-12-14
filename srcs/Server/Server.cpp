@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/13 21:05:42 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:30:11 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Server::~Server()
     /**
      * TODO:
      * server cleanup
-    */
+     */
     for (size_t i = 0; i < _pollList.size(); i++)
     {
         close(_pollList[i].fd);
@@ -59,7 +59,7 @@ bool Server::isClientAuthenticated(int clientFd)
 /**
  * @brief Check if a nickname is taken
  * TODO: not yet check if two names are strictly identical
-*/
+ */
 bool Server::isNicknameTaken(const std::string &newNick) const
 {
     for (ClientTable::const_iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -305,17 +305,17 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
     else if (socketInfo.revents & POLLERR) // an error has occurred on this socket
     {
         pollEventErrorMessage(POLLERR, socketInfo.fd);
-        _removeClient(socketInfo.fd);
+        _removeClient(socketInfo.fd, ERR_POLLERR); // ERR_POLLERR
     }
     else if (socketInfo.revents & POLLHUP) // the remote side of the connection hung up
     {
         pollEventErrorMessage(POLLHUP, socketInfo.fd);
-        _removeClient(socketInfo.fd);
+        _removeClient(socketInfo.fd, ERR_POLLHUP); // ERR_POLLHUP
     }
     else if (socketInfo.revents & POLLNVAL) // not sure if this will ever happen. this means that there's something wrong with the socket initialization
     {
         pollEventErrorMessage(POLLNVAL, socketInfo.fd);
-        _removeClient(socketInfo.fd);
+        _removeClient(socketInfo.fd, ERR_POLLNVAL); // ERR_POLLNVAL
     }
 }
 
@@ -338,22 +338,22 @@ void Server::_checkClientTimeout(void)
     }
 
     for (std::vector<int>::iterator it = toBeRemoved.begin(); it != toBeRemoved.end(); it++)
-        _removeClient(*it);
+        _removeClient(*it, PING_TIMEOUT); // PING_TIMEOUT
 }
 
 /**
  * @brief Send PING to designated socketfd check the liveliness of the client
-*/
+ */
 void Server::_sendPing(int clientFd)
 {
     std::string pingMsg = "PING :" + std::string(HOST) + CRLF;
-    
+
     send(clientFd, pingMsg.c_str(), pingMsg.size(), 0);
 }
 
 /**
  * @brief Send PING to each of the client and update server last ping time
-*/
+ */
 void Server::_sendPingToClients(void)
 {
     for (ClientTable::iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -366,7 +366,7 @@ void Server::_sendPingToClients(void)
 
 /**
  * @brief Update server's last ping time
-*/
+ */
 void Server::_updateServerLastPing(void)
 {
     _lastPing = std::time(0);
@@ -375,7 +375,7 @@ void Server::_updateServerLastPing(void)
 
 /**
  * @brief Check if the server should ping all the client
-*/
+ */
 bool Server::_shouldPingClients(void)
 {
     time_t timeNow = std::time(0);
@@ -418,21 +418,20 @@ int Server::_acceptConnection(int socketFd)
 /**
  * @brief Disconnect a client and remove them from the ClientTable.
  */
-void Server::_removeClient(int clientFd)
+void Server::_removeClient(int clientFd, QuitReason reason)
 {
     ClientTable::iterator client = _clients.find(clientFd);
 
+    (void)reason;
     if (client != _clients.end())
     {
         /**
          * TODO: remove client from all the channels he/she joined
-        */
+         */
         delete client->second;    // clean up the client instance
         _clients.erase(client);   // remove from ClientTable
         _stopListening(clientFd); // stop listening from this client
         Display::displayServerAction(clientFd, "Removed! `Server::_removeClient`");
-
-        std::cout << "Clients count: " << _clients.size() << std::endl;
     }
 }
 
@@ -453,12 +452,12 @@ void Server::_readRequest(int clientFd)
     if (bytesRead == -1)
     {
         Logger::justLog("recv", &strerror);
-        _removeClient(clientFd);
+        _removeClient(clientFd, RECV_FAILED); // RECV_FAILED
         return;
     }
     else if (bytesRead == 0) // client disconnected
     {
-        _removeClient(clientFd);
+        _removeClient(clientFd, DISCONNECTED); // DISCONNECTED
         return;
     }
 

@@ -30,7 +30,7 @@ public:
     Parser(void);
     ~Parser(void);
 
-    static void splitStr(const std::string &str, Splitted &vect, const std::string &delimeter, SplittingMode mode);
+    static void splitStr(const std::string &str, Splitted &vect, const std::string &delimeter, SplittingMode mode = EXCLUDE_EMPTY);
     static IRCMessage parseIRCMessage(const std::string &str);
     static void showMessage(const IRCMessage &msg);
     static std::string getTimeNow(void);
