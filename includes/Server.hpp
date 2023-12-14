@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/14 13:37:49 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/14 14:45:25 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 #define BUFFER_SIZE 4096
 
 class CommandFactory; // forward declaration
-// class Channel;        // forward declaration
 
 class Server
 {
@@ -66,6 +65,7 @@ public:
     // channel management
     Channel *addNewChannel(const std::string &channelName);
     Channel *getChannel(const std::string &channelName);
+    ChannelTable getChannels(void) const;
     void removeChannel(const std::string &channelName);
 
 private:

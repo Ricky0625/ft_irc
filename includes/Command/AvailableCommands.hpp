@@ -9,7 +9,8 @@
 #include "QUIT.hpp"
 
 #include "JOIN.hpp"
-#include "TOPIC.hpp"
 #include "PART.hpp"
+#include "TOPIC.hpp"
+#include "NAMES.hpp"
 
 #endif

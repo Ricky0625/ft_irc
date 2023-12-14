@@ -29,6 +29,11 @@ Channel *Server::getChannel(const std::string &channelName)
     return target->second;
 }
 
+Server::ChannelTable Server::getChannels(void) const
+{
+    return _channels;
+}
+
 void Server::removeChannel(const std::string &channelName)
 {
     ChannelTable::iterator channel = _channels.find(channelName);

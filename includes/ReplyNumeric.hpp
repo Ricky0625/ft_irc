@@ -24,16 +24,16 @@ std::string RPL_JOIN(Client *newMember, Channel *channel);
 std::string RPL_PART(Client *client, Channel *channel, const std::string &reason);
 
 // reply numerics
-std::string RPL_WELCOME(Client *client);                            // 001
-std::string RPL_YOURHOST(Client *client);                           // 002
-std::string RPL_CREATED(Client *client, const std::string &upTime); // 003
-std::string RPL_MYINFO(Client *client);                             // 004
-std::string RPL_ISUPPORT();                                         // 005
-std::string RPL_NOTOPIC(Client *client, Channel *channel);          // 331
-std::string RPL_TOPIC(Client *client, Channel *channel);            // 332
-std::string RPL_TOPICWHOTIME(Client *client, Channel *channel);     // 333
-std::string RPL_NAMREPLY(Client *client, Channel *channel);         // 353
-std::string RPL_ENDOFNAMES(Client *client, Channel *channel);       // 366
+std::string RPL_WELCOME(Client *client);                                    // 001
+std::string RPL_YOURHOST(Client *client);                                   // 002
+std::string RPL_CREATED(Client *client, const std::string &upTime);         // 003
+std::string RPL_MYINFO(Client *client);                                     // 004
+std::string RPL_ISUPPORT();                                                 // 005
+std::string RPL_NOTOPIC(Client *client, Channel *channel);                  // 331
+std::string RPL_TOPIC(Client *client, Channel *channel);                    // 332
+std::string RPL_TOPICWHOTIME(Client *client, Channel *channel);             // 333
+std::string RPL_NAMREPLY(Client *client, Channel *channel);                 // 353
+std::string RPL_ENDOFNAMES(Client *client, const std::string &channelName); // 366
 
 // ERRORS
 std::string ERR_NOSUCHCHANNEL(Client *client, const std::string &channelName); // 403

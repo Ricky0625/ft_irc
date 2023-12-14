@@ -62,9 +62,9 @@ std::string RPL_NAMREPLY(Client *client, Channel *channel)
 }
 
 // 366
-std::string RPL_ENDOFNAMES(Client *client, Channel *channel)
+std::string RPL_ENDOFNAMES(Client *client, const std::string &channelName)
 {
-    return ChannelSimpleMessage("366", client, channel->getName(), "End of /NAMES list");
+    return ChannelSimpleMessage("366", client, channelName, "End of /NAMES list");
 }
 
 // 403

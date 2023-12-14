@@ -79,5 +79,5 @@ void ICommand::queueJoinWelcomeMessage(Client *client, Channel *channel)
         client->enqueueBuffer(SEND, RPL_TOPICWHOTIME(client, channel));
     }
     client->enqueueBuffer(SEND, RPL_NAMREPLY(client, channel));
-    client->enqueueBuffer(SEND, RPL_ENDOFNAMES(client, channel));
+    client->enqueueBuffer(SEND, RPL_ENDOFNAMES(client, channel->getName()));
 }
