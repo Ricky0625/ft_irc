@@ -38,10 +38,14 @@ std::string RPL_TOPIC(Client *client, Channel *channel);                    // 3
 std::string RPL_TOPICWHOTIME(Client *client, Channel *channel);             // 333
 std::string RPL_NAMREPLY(Client *client, Channel *channel);                 // 353
 std::string RPL_ENDOFNAMES(Client *client, const std::string &channelName); // 366
+std::string RPL_MOTD(Client *client, const std::string &motdLine);          // 372
+std::string RPL_MOTDSTART(Client *client);                                  // 375
+std::string RPL_ENDOFMOTD(Client *client);                                  // 376
 
 // ERRORS
 std::string ERR_NOSUCHCHANNEL(Client *client, const std::string &channelName); // 403
 std::string ERR_TOOMANYCHANNELS(Client *client);                               // 405
+std::string ERR_NOMOTD(Client *client);                                        // 422
 std::string ERR_NONICKNAMEGIVEN(Client *client);                               // 431
 std::string ERR_ERRONEUSNICKNAME(Client *client, const std::string &newNick);  // 432
 std::string ERR_NICKNAMEINUSE(Client *client, const std::string &newNick);     // 433

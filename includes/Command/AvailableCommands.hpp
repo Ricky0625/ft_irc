@@ -14,4 +14,6 @@
 #include "NAMES.hpp"
 #include "LIST.hpp"
 
+#include "MOTD.hpp"
+
 #endif

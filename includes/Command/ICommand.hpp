@@ -30,6 +30,7 @@ public:
     // queue utils
     void queueWelcomeMessage(Client *client, const std::string &upTime);
     void queueJoinWelcomeMessage(Client *client, Channel *channel);
+    void queueMOTD(Client *client);
 
 protected:
     Server *_server;

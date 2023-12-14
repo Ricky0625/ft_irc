@@ -85,10 +85,34 @@ std::string RPL_ENDOFNAMES(Client *client, const std::string &channelName)
     return ChannelSimpleMessage("366", client, channelName, "End of /NAMES list");
 }
 
+// 372
+std::string RPL_MOTD(Client *client, const std::string &motdLine)
+{
+    return SourceMessage("372", client) + MessageTrailing(motdLine);
+}
+
+// 375
+std::string RPL_MOTDSTART(Client *client)
+{
+    return SourceMessage("375", client) + MessageTrailing("- " + std::string(HOST) + " Message of the day - ");
+}
+
+// 376
+std::string RPL_ENDOFMOTD(Client *client)
+{
+    return SourceMessage("376", client) + MessageTrailing("End of /MOTD command.");
+}
+
 // 403
 std::string ERR_NOSUCHCHANNEL(Client *client, const std::string &channelName)
 {
     return ChannelSimpleMessage("403", client, channelName, "No such channel");
+}
+
+// 422
+std::string ERR_NOMOTD(Client *client)
+{
+    return SourceMessage("422", client) + MessageTrailing("MOTD File is missing");
 }
 
 // 431

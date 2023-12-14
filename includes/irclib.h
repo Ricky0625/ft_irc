@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/12 15:11:00 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/14 18:47:16 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define IRCLIB_HPP
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <string.h>
 #include <ctime>
@@ -47,5 +48,6 @@
 #define VERSION "v1.0.0"
 #define TIMEOUT 180 // 3 mins
 #define SERVER_PING_TIMEOUT 30
+#define MOTD_PATH "config/motd.config"
 
 #endif

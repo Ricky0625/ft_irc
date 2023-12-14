@@ -69,6 +69,7 @@ void ICommand::queueWelcomeMessage(Client *client, const std::string &upTime)
      * 1. complete RPL_MYINFO
      * 2. complete RPL_MYINFO
      */
+    queueMOTD(client);
 }
 
 void ICommand::queueJoinWelcomeMessage(Client *client, Channel *channel)
@@ -80,4 +81,22 @@ void ICommand::queueJoinWelcomeMessage(Client *client, Channel *channel)
     }
     client->enqueueBuffer(SEND, RPL_NAMREPLY(client, channel));
     client->enqueueBuffer(SEND, RPL_ENDOFNAMES(client, channel->getName()));
+}
+
+void ICommand::queueMOTD(Client *client)
+{
+    std::ifstream data;
+    std::string line;
+
+    data.open(MOTD_PATH);
+    if (data.is_open() == false)
+    {
+        client->enqueueBuffer(SEND, ERR_NOMOTD(client));
+        return;
+    }
+
+    client->enqueueBuffer(SEND, RPL_MOTDSTART(client));
+    while (std::getline(data, line))
+        client->enqueueBuffer(SEND, RPL_MOTD(client, line)); // motd content
+    client->enqueueBuffer(SEND, RPL_ENDOFMOTD(client));
 }

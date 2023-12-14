@@ -27,6 +27,9 @@ CommandFactory::CommandFactory()
     // messages
     // _commands["PRIVMSG"] = new PRIVMSG();
     // _commands["NOTICE"] = new NOTICE();
+
+    // extra
+    _commands["MOTD"] = new MOTD();
 }
 
 // destructor
