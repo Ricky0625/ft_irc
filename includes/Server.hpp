@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/14 17:55:52 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/16 15:40:30 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ public:
 
     // getters
     Client *getClient(int clientFd) const;
+    Client *getClientByNickname(const std::string &nickname) const;
     std::string getUpTime(void) const;
 
     // channel management

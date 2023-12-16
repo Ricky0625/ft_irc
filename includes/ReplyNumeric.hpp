@@ -23,6 +23,7 @@ std::string RPL_PONG(Client *client, const std::string &oldNickname, const std::
 std::string RPL_JOIN(Client *newMember, Channel *channel);
 std::string RPL_PART(Client *client, Channel *channel, const std::string &reason);
 std::string RPL_QUIT(Client *client, const std::string &reason);
+std::string RPL_PRIVMSG(Client *client, const std::string &target, const std::string &msg);
 
 // reply numerics
 std::string RPL_WELCOME(Client *client);                                    // 001
@@ -43,20 +44,24 @@ std::string RPL_MOTDSTART(Client *client);                                  // 3
 std::string RPL_ENDOFMOTD(Client *client);                                  // 376
 
 // ERRORS
-std::string ERR_NOSUCHCHANNEL(Client *client, const std::string &channelName); // 403
-std::string ERR_TOOMANYCHANNELS(Client *client);                               // 405
-std::string ERR_NOMOTD(Client *client);                                        // 422
-std::string ERR_NONICKNAMEGIVEN(Client *client);                               // 431
-std::string ERR_ERRONEUSNICKNAME(Client *client, const std::string &newNick);  // 432
-std::string ERR_NICKNAMEINUSE(Client *client, const std::string &newNick);     // 433
-std::string ERR_NOTONCHANNEL(Client *client, Channel *channel);                // 442
-std::string ERR_NEEDMOREPARAMS(Client *client, const std::string &command);    // 461
-std::string ERR_ALREADYREGISTERED(Client *client);                             // 462
-std::string ERR_PASSWDMISMATCH(Client *client);                                // 464
-std::string ERR_CHANNELISFULL(Client *client);                                 // 471
-std::string ERR_INVITEONLYCHAN(Client *client);                                // 473
-std::string ERR_BANNEDFROMCHAN(Client *client);                                // 474
-std::string ERR_BAD_CHANNELKEY(Client *client);                                // 475
-std::string ERR_BADCHANMASK(Client *client);                                   // 476
+std::string ERR_NOSUCHNICK(Client *client, const std::string &nickname);          // 401
+std::string ERR_NOSUCHCHANNEL(Client *client, const std::string &channelName);    // 403
+std::string ERR_CANNOTSENDTOCHAN(Client *client, const std::string &channelName); // 404
+std::string ERR_TOOMANYCHANNELS(Client *client);                                  // 405
+std::string ERR_NORECIPIENT(Client *client, const std::string &command);          // 411
+std::string ERR_NOTEXTTOSEND(Client *client);                                     // 412
+std::string ERR_NOMOTD(Client *client);                                           // 422
+std::string ERR_NONICKNAMEGIVEN(Client *client);                                  // 431
+std::string ERR_ERRONEUSNICKNAME(Client *client, const std::string &newNick);     // 432
+std::string ERR_NICKNAMEINUSE(Client *client, const std::string &newNick);        // 433
+std::string ERR_NOTONCHANNEL(Client *client, Channel *channel);                   // 442
+std::string ERR_NEEDMOREPARAMS(Client *client, const std::string &command);       // 461
+std::string ERR_ALREADYREGISTERED(Client *client);                                // 462
+std::string ERR_PASSWDMISMATCH(Client *client);                                   // 464
+std::string ERR_CHANNELISFULL(Client *client);                                    // 471
+std::string ERR_INVITEONLYCHAN(Client *client);                                   // 473
+std::string ERR_BANNEDFROMCHAN(Client *client);                                   // 474
+std::string ERR_BAD_CHANNELKEY(Client *client);                                   // 475
+std::string ERR_BADCHANMASK(Client *client);                                      // 476
 
 #endif

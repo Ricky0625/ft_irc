@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/14 18:15:31 by wricky-t         ###   ########.fr       */
+/*   Updated: 2023/12/16 15:43:00 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,20 @@ Client *Server::getClient(int clientFd) const
         return NULL;
 
     return client->second;
+}
+
+Client *Server::getClientByNickname(const std::string &nickname) const
+{
+    Client *client;
+
+    for (ClientTable::const_iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+        client = it->second;
+        if (client && client->getNickname() == nickname)
+            return client;
+    }
+
+    return NULL;
 }
 
 std::string Server::getUpTime() const

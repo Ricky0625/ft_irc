@@ -25,7 +25,7 @@ CommandFactory::CommandFactory()
     // _commands["MODE"] = new MODE();
 
     // messages
-    // _commands["PRIVMSG"] = new PRIVMSG();
+    _commands["PRIVMSG"] = new PRIVMSG();
     // _commands["NOTICE"] = new NOTICE();
 
     // extra

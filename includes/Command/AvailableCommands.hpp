@@ -14,6 +14,8 @@
 #include "NAMES.hpp"
 #include "LIST.hpp"
 
+#include "PRIVMSG.hpp"
+
 #include "MOTD.hpp"
 
 #endif
