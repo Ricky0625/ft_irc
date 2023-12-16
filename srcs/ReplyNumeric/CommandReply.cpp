@@ -32,7 +32,7 @@ std::string RPL_QUIT(Client *client, const std::string &reason)
     return ClientHeader(client, client->getNickname()) + " QUIT" + MessageTrailing("Quit: " + reason);
 }
 
-std::string RPL_PRIVMSG(Client *client, const std::string &target, const std::string &msg)
+std::string RPL_MSG(Client *client, const std::string &target, const std::string &msg, MessageType type)
 {
-    return ClientHeader(client, client->getNickname()) + " PRIVMSG " + target + MessageTrailing(msg); 
+    return ClientHeader(client, client->getNickname()) + (type == PRIVMSG_MSG ? " PRIVMSG " : " NOTICE ") + target + MessageTrailing(msg); 
 }

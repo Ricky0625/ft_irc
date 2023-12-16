@@ -1,9 +1,9 @@
-#include "PRIVMSG.hpp"
+#include "NOTICE.hpp"
 
 // default constructor
-PRIVMSG::PRIVMSG() : _msg(""), _hasMsg(false) {}
+NOTICE::NOTICE() : _msg(""), _hasMsg(false) {}
 
-void PRIVMSG::initialize(Server &server, const IRCMessage &ircMsg)
+void NOTICE::initialize(Server &server, const IRCMessage &ircMsg)
 {
     ICommand::initialize(server, ircMsg);
 
@@ -34,7 +34,7 @@ void PRIVMSG::initialize(Server &server, const IRCMessage &ircMsg)
     }
 }
 
-void PRIVMSG::execute(int clientFd)
+void NOTICE::execute(int clientFd)
 {
     Server &server = *_server;
     Client *client = server.getClient(clientFd);
@@ -45,16 +45,10 @@ void PRIVMSG::execute(int clientFd)
         return;
 
     if (_targets.empty())
-    {
-        client->enqueueBuffer(SEND, ERR_NORECIPIENT(client, _ircMsg.command));
         return;
-    }
 
     if (_hasMsg == false)
-    {
-        client->enqueueBuffer(SEND, ERR_NOTEXTTOSEND(client));
         return;
-    }
 
     for (size_t i = 0; i < _targets.size(); i++)
     {
@@ -79,13 +73,11 @@ void PRIVMSG::execute(int clientFd)
             _broadcastMessage(client, targetChannel);
         }
         else if (recipient)
-            recipient->enqueueBuffer(SEND, RPL_MSG(client, recipient->getNickname(), _msg));
-        else
-            client->enqueueBuffer(SEND, ERR_NOSUCHNICK(client, target));
+            recipient->enqueueBuffer(SEND, RPL_MSG(client, recipient->getNickname(), _msg, NOTICE_MSG));
     }
 }
 
-void PRIVMSG::_broadcastMessage(Client *client, Channel *channel)
+void NOTICE::_broadcastMessage(Client *client, Channel *channel)
 {
     Channel::MemberTable members = channel->getMembers();
     Client *target;
@@ -98,6 +90,6 @@ void PRIVMSG::_broadcastMessage(Client *client, Channel *channel)
         if (target->getNickname() == client->getNickname())
             continue;
         server.subscribeEvent(target->getFd(), POLLOUT);
-        target->enqueueBuffer(SEND, RPL_MSG(client, channel->getName(), _msg));
+        target->enqueueBuffer(SEND, RPL_MSG(client, channel->getName(), _msg, NOTICE_MSG));
     }
 }

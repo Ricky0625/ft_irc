@@ -15,6 +15,7 @@
 #include "LIST.hpp"
 
 #include "PRIVMSG.hpp"
+#include "NOTICE.hpp"
 
 #include "MOTD.hpp"
 
