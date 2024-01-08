@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/16 15:40:30 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/08 11:56:51 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ private:
     int _serverFd;
     std::string _password;
     std::string _upTime;
-    time_t _lastPing;
+    // time_t _lastPing;
 
     PollFdList _pollList;
     PollTable _pollTable;
@@ -102,8 +102,6 @@ private:
     void _checkClientTimeout(void);
     void _sendPing(int clientFd);
     void _sendPingToClients(void);
-    void _updateServerLastPing(void);
-    bool _shouldPingClients(void);
 
     // action
     int _acceptConnection(int socketFd);

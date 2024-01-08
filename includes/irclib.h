@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/14 18:47:16 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/08 11:58:15 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@
 #define SERVER_NAME "capygroove"
 #define HOST "localhost"
 #define VERSION "v1.0.0"
-#define TIMEOUT 180 // 3 mins
+#define TIMEOUT 120000 // 2 mins
 #define SERVER_PING_TIMEOUT 30
 #define MOTD_PATH "config/motd.config"
 

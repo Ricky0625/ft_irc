@@ -6,14 +6,14 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2023/12/16 15:43:00 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/08 11:57:54 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 // default constructor
-Server::Server(const std::string &port, const std::string &password) : _password(password), _lastPing(std::time(0)), _cmdFactory(new CommandFactory())
+Server::Server(const std::string &port, const std::string &password) : _password(password), _cmdFactory(new CommandFactory())
 {
     _createServerSocket(port);
     if (_serverFd == -1)
@@ -88,18 +88,21 @@ void Server::start(void)
 
     while (true)
     {
-        numEvents = poll(_pollList.data(), _pollList.size(), -1);
+        numEvents = poll(_pollList.data(), _pollList.size(), TIMEOUT);
         if (numEvents == -1)
         {
             Logger::justLog("poll", &strerror);
             break;
         }
-        _handleSocketEvents();
-
-        // timeout management here
-        if (_shouldPingClients())
+        else if (numEvents == 0)
+        {
+            // timeout management here
+            // periodically ping client to check if they're still alive
             _sendPingToClients();
-        _checkClientTimeout();
+            _checkClientTimeout();
+        }
+
+        _handleSocketEvents();
     }
 }
 
@@ -375,26 +378,6 @@ void Server::_sendPingToClients(void)
         _sendPing(it->first);
         Display::displayServerAction(it->first, "PING! `Server::_sendPingToClients`");
     }
-    _updateServerLastPing();
-}
-
-/**
- * @brief Update server's last ping time
- */
-void Server::_updateServerLastPing(void)
-{
-    _lastPing = std::time(0);
-    Display::displayServerAction(_serverFd, "Server update its last ping time. `Server::_updateServerLastPing`");
-}
-
-/**
- * @brief Check if the server should ping all the client
- */
-bool Server::_shouldPingClients(void)
-{
-    time_t timeNow = std::time(0);
-
-    return ((timeNow - _lastPing) > SERVER_PING_TIMEOUT);
 }
 
 /**
