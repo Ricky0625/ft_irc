@@ -6,7 +6,7 @@
 #    By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/20 16:53:33 by wricky-t          #+#    #+#              #
-#    Updated: 2023/11/24 14:44:40 by wricky-t         ###   ########.fr        #
+#    Updated: 2024/01/08 13:38:55 by wricky-t         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,6 +62,12 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | ${PCH}
 
 -include $(DEPS)
 
+bot:
+	@make -C bot
+
+botre:
+	@make re -C bot
+
 clean:
 	$(RM) $(OBJS_DIR)
 
@@ -70,4 +76,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re env debug
+.PHONY: all clean fclean re env debug bot

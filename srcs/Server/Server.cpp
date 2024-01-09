@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/08 11:57:54 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/08 22:19:32 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,9 +480,11 @@ void Server::_processRequests(int clientFd, Client *target)
     while ((crlfPos = readBuffer.find(CRLF)) != std::string::npos)
     {
         singleRequest = readBuffer.substr(0, crlfPos);
-        ircMsg = Parser::parseIRCMessage(singleRequest);
-
-        // display incoming message
+        if (singleRequest.empty())
+        {
+            readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
+            continue;
+        }
         Display::displayIncoming(clientFd, singleRequest);
 
         command = _cmdFactory->recognizeCommand(*this, ircMsg);

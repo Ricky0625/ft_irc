@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/08 11:56:51 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/08 14:45:15 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ private:
     int _serverFd;
     std::string _password;
     std::string _upTime;
-    // time_t _lastPing;
 
     PollFdList _pollList;
     PollTable _pollTable;
