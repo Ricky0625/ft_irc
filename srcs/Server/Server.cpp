@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/08 22:19:32 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/09 16:29:54 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,9 +422,9 @@ void Server::removeClient(int clientFd, QuitReason reason)
     (void)reason;
     if (client != _clients.end())
     {
-        delete client->second;                                   // clean up the client instance
-        _clients.erase(client);                                  // remove from ClientTable
-        _stopListening(clientFd);                                // stop listening from this client
+        delete client->second;    // clean up the client instance
+        _clients.erase(client);   // remove from ClientTable
+        _stopListening(clientFd); // stop listening from this client
         Display::displayServerAction(clientFd, "Removed! `Server::_removeClient`");
     }
 }
@@ -485,6 +485,7 @@ void Server::_processRequests(int clientFd, Client *target)
             readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
             continue;
         }
+        ircMsg = Parser::parseIRCMessage(singleRequest);
         Display::displayIncoming(clientFd, singleRequest);
 
         command = _cmdFactory->recognizeCommand(*this, ircMsg);
