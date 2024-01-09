@@ -6,7 +6,7 @@
 #    By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/20 16:53:33 by wricky-t          #+#    #+#              #
-#    Updated: 2024/01/08 13:38:55 by wricky-t         ###   ########.fr        #
+#    Updated: 2024/01/09 14:09:19 by wricky-t         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -69,6 +69,7 @@ botre:
 	@make re -C bot
 
 clean:
+	@make clean -C bot
 	$(RM) $(OBJS_DIR)
 
 fclean: clean
