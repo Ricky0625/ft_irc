@@ -27,7 +27,7 @@ void Display::displayBotInfo(const std::string &ip, const std::string &port)
 
 void Display::displayIncoming(int fromFd, const std::string &msg)
 {
-    std::cout << BOLD_PURPLE "[CLIENT] " << std::setw(4) << fromFd << " << " << msg << RESET << std::endl;
+    std::cout << BOLD_YELLOW "{SERVER} " << std::setw(4) << fromFd << " << " << msg << RESET << std::endl;
 }
 
 void Display::displayOutgoing(int toFd, const std::string &msg)
@@ -39,7 +39,7 @@ void Display::displayOutgoing(int toFd, const std::string &msg)
     while ((crlfPos = copy.find(CRLF)) != std::string::npos)
     {
         singleReply = copy.substr(0, crlfPos);
-        std::cout << BOLD_CYAN "[SERVER] " << std::setw(4) << toFd << " >> " << singleReply << RESET << std::endl;
+        std::cout << BOLD_GREEN "{   BOT} " << std::setw(4) << toFd << " >> " << singleReply << RESET << std::endl;
         copy = copy.substr(crlfPos + strlen(CRLF));
     }
 }
