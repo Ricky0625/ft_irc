@@ -35,6 +35,14 @@ public:
     static void showMessage(const IRCMessage &msg);
     static std::string getTimeNow(void);
     static std::string getUnixTimeStamp(void);
+
+    template <typename T>
+    static std::string to_string(const T& n)
+    {
+        std::ostringstream stm;
+        stm << n;
+        return stm.str();
+    }
 };
 
 #endif

@@ -43,7 +43,7 @@ std::string RPL_LISTSTART(Client *client)
 // 322
 std::string RPL_LIST(Client *client, Channel *channel)
 {
-    return SourceMessage("322", client) + " " + channel->getName() + " " + std::to_string(channel->getMemberTotal()) + MessageTrailing(channel->getTopic());
+    return SourceMessage("322", client) + " " + channel->getName() + " " + Parser::to_string(channel->getMemberTotal()) + MessageTrailing(channel->getTopic());
 }
 
 // 323

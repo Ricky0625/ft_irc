@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <string.h>
+#include <ctime>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -11,6 +13,8 @@
 #include <arpa/inet.h>
 
 #include <unistd.h>
+#include <cerrno>
+#include <stdlib.h>
 
 #include <poll.h>
 

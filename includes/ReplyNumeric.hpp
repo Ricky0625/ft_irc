@@ -4,6 +4,7 @@
 #include "irclib.h"
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "Parser.hpp"
 
 class Client;
 class Channel;

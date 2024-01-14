@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Bot.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:05:21 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/11 21:17:55 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/14 08:50:01 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Bot::Bot(const std::string &serverIp, const std::string &port, const std::string
     _obtainServerInfo(serverIp, port, &servinfo);
     _connectToServer(servinfo);
 
-    _nickname = "itchyliki";
+    _nickname = "capybot";
     _username = "capybara00";
     _realname = "capybara the great";
 

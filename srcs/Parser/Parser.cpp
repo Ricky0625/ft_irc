@@ -127,7 +127,5 @@ std::string Parser::getUnixTimeStamp(void)
 {
     time_t currentTime = std::time(NULL);
 
-    std::string timestampString = std::to_string(currentTime);
-
-    return timestampString;
+    return Parser::to_string(currentTime);
 }
