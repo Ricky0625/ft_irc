@@ -13,7 +13,6 @@ void Display::clearScreen()
 
 void Display::displayServerInfo(const std::string &port, const std::string &pass, const std::string &upTime)
 {
-    clearScreen();
     std::cout << BOLD_WHITE "==+==+==+==+==+==+==+==+==+==+==+==+==+==\n" << std::endl;
     std::cout << " [Server " BOLD_YELLOW SERVER_NAME << "(" << HOST << ")" << BOLD_WHITE "]" << std::endl;
     std::cout << " Created: " << upTime << std::endl;

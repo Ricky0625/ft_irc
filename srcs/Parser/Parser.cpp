@@ -230,7 +230,5 @@ void Parser::showConfig(const ConfigMap &configMap)
 
             std::cout << key << "=" << value << std::endl;
         }
-
-        std::cout << std::endl;
     }
 }

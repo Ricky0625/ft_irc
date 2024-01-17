@@ -24,6 +24,9 @@ CommandFactory::CommandFactory()
     // Server queries
     // _commands["MODE"] = new MODE();
 
+    // Operator-only command
+    // _commands["KILL"] = new KILL();
+
     // messages
     _commands["PRIVMSG"] = new PRIVMSG();
     _commands["NOTICE"] = new NOTICE();

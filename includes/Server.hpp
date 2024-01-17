@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/17 12:20:37 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/17 14:42:59 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,22 @@ public:
     void removeMemberFromChannels(const std::string &nickname);
 
     void removeClient(int clientFd, QuitReason reason);
+
+    // config file query functions
+    std::string getValueFromSection(const std::string &section, const std::string &key);
+    Parser::ConfigSection getConfigSection(const std::string &section);
+
+    class NoSuchConfigSection : public std::exception
+    {
+        public:
+            virtual const char *what() const throw();
+    };
+
+    class NoSuchConfigKey : public std::exception
+    {
+        public:
+            virtual const char *what() const throw();
+    };
 
 private:
     int _serverFd;

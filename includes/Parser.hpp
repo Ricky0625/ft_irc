@@ -26,7 +26,8 @@ class Parser
 {
 public:
     typedef std::vector<std::string> Splitted;
-    typedef std::map<std::string, std::map<std::string, std::string> > ConfigMap;
+    typedef std::map<std::string, std::string> ConfigSection;
+    typedef std::map<std::string, ConfigSection> ConfigMap;
 
     Parser(void);
     ~Parser(void);
