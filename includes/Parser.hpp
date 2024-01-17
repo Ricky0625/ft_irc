@@ -26,15 +26,22 @@ class Parser
 {
 public:
     typedef std::vector<std::string> Splitted;
+    typedef std::map<std::string, std::map<std::string, std::string> > ConfigMap;
 
     Parser(void);
     ~Parser(void);
 
     static void splitStr(const std::string &str, Splitted &vect, const std::string &delimeter, SplittingMode mode = EXCLUDE_EMPTY);
+    static std::string &ltrim(std::string &str);
+    static std::string &rtrim(std::string &str);
+    static std::string &trim(std::string &str);
+    static void toLowerCase(std::string& input);
     static IRCMessage parseIRCMessage(const std::string &str);
     static void showMessage(const IRCMessage &msg);
     static std::string getTimeNow(void);
     static std::string getUnixTimeStamp(void);
+    static void parseConfigFile(const std::string &filename, ConfigMap &configMap);
+    static void showConfig(const ConfigMap &configMap);
 
     template <typename T>
     static std::string to_string(const T& n)

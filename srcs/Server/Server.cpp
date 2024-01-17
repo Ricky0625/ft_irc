@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/09 16:29:54 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/17 12:32:41 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ Server::Server(const std::string &port, const std::string &password) : _password
         Logger::msgExitLog(FAIL_TO_INIT_SOCKET);
     _addSocketToPollTable(_serverFd, POLLIN);
     _updateUpTime();
+    Parser::parseConfigFile(CONFIG_PATH, _config);
     Display::displayServerInfo(port, password, getUpTime());
+    Parser::showConfig(_config);
 }
 
 // destructor

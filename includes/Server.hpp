@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/08 14:45:15 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/17 12:20:37 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,9 +83,15 @@ private:
     ChannelTable _channels;
     CommandFactory *_cmdFactory;
 
+    Parser::ConfigMap _config;
+
     // initialization
     void _createServerSocket(const std::string &port);
     void _updateUpTime(void);
+
+    // config file query functions
+    // get a value based on the given section and key
+    // get the section map based on the given section
 
     // monitor list management
     void _addSocketToPollTable(int socketToMonitor, short events);

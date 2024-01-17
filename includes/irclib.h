@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irclib.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wricky-t <wricky-t@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/08 11:58:15 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/17 11:47:55 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include "Parser.hpp"
 #include "Logger.hpp"
@@ -49,5 +50,6 @@
 #define TIMEOUT 120000 // 2 mins
 #define SERVER_PING_TIMEOUT 30
 #define MOTD_PATH "config/motd.config"
+#define CONFIG_PATH "config/default.config"
 
 #endif

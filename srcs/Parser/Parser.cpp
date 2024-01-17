@@ -35,6 +35,39 @@ void Parser::splitStr(const std::string &str, Splitted &vect, const std::string 
 }
 
 /**
+ * @brief Trim leading whitespaces
+*/
+std::string &Parser::ltrim(std::string &str)
+{
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return str;
+}
+
+/**
+ * @brief Trim trailing whitespaces
+*/
+std::string &Parser::rtrim(std::string &str)
+{
+    str.erase(std::find_if(str.rbegin(), str.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), str.end());
+    return str;
+}
+
+/**
+ * @brief Trim trailing and leading whitespaces
+*/
+std::string &Parser::trim(std::string &str)
+{
+    return ltrim(rtrim(str));
+}
+
+/**
+ * @brief Convert a string to lowercase. Bruh. C++98 don't have this shit.
+*/
+void Parser::toLowerCase(std::string& input) {
+    std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+}
+
+/**
  * @brief Parse the request string into a IRCMessage struct
  * @details
  * IRC message typically follow a message structure. Here's a brief overview:
@@ -94,6 +127,9 @@ IRCMessage Parser::parseIRCMessage(const std::string &str)
     return msg;
 }
 
+/**
+ * @brief Show what's inside the IRCMessage struct. Just for DEBUG purpose.
+*/
 void Parser::showMessage(const IRCMessage &msg)
 {
     std::cout << "= = = = = = = = = = = = = = = = = =" << std::endl;
@@ -112,6 +148,9 @@ void Parser::showMessage(const IRCMessage &msg)
     std::cout << "= = = = = = = = = = = = = = = = = =" << std::endl;
 }
 
+/**
+ * @brief Get the current time in a formatted string format.
+*/
 std::string Parser::getTimeNow(void)
 {
     std::time_t currentTime = std::time(NULL);
@@ -123,9 +162,75 @@ std::string Parser::getTimeNow(void)
     return std::string(buffer);
 }
 
+/**
+ * @brief Get current time as a raw unix timestamp string
+*/
 std::string Parser::getUnixTimeStamp(void)
 {
     time_t currentTime = std::time(NULL);
 
     return Parser::to_string(currentTime);
+}
+
+void Parser::parseConfigFile(const std::string &filename, ConfigMap &configMap)
+{
+    std::ifstream configFile(filename.c_str());
+
+    // check if the file can be opened.
+    if (configFile.is_open() == false)
+        return;
+    
+    std::string line;
+    std::string currentSection;
+    Splitted keyValuePair;
+    while (std::getline(configFile, line))
+    {
+        trim(line);
+
+        // if the line is empty or it's a comment, skip.
+        if (line.empty() || line[0] == '#')
+            continue;
+        
+        if (line[0] == '[' && line[line.size() - 1] == ']')
+        {
+            // new section
+            currentSection = line.substr(1, line.length() - 2);
+            toLowerCase(currentSection);
+        }
+        else
+        {
+            // new key value pair for the current section
+            keyValuePair.clear();
+            splitStr(line, keyValuePair, "=");
+            if (keyValuePair.size() != 2)
+            {
+                std::cerr << BOLD_RED "[PARSER]    :: Ignoring this line > " << line << RESET << std::endl;
+                continue;
+            }
+
+            toLowerCase(keyValuePair[0]);
+            toLowerCase(keyValuePair[1]);
+
+            configMap[currentSection][trim(keyValuePair[0])] = trim(keyValuePair[1]);
+        }
+    }
+}
+
+void Parser::showConfig(const ConfigMap &configMap)
+{
+    for (ConfigMap::const_iterator sectionIter = configMap.begin(); sectionIter != configMap.end(); ++sectionIter) {
+        const std::string& sectionName = sectionIter->first;
+        const std::map<std::string, std::string>& keyValues = sectionIter->second;
+
+        std::cout << "[" << sectionName << "]" << std::endl;
+
+        for (std::map<std::string, std::string>::const_iterator keyValueIter = keyValues.begin(); keyValueIter != keyValues.end(); ++keyValueIter) {
+            const std::string& key = keyValueIter->first;
+            const std::string& value = keyValueIter->second;
+
+            std::cout << key << "=" << value << std::endl;
+        }
+
+        std::cout << std::endl;
+    }
 }
