@@ -102,3 +102,9 @@ std::string RPL_ENDOFMOTD(Client *client)
 {
     return SourceMessage("376", client) + MessageTrailing("End of /MOTD command.");
 }
+
+// 381
+std::string RPL_YOUREOPER(Client *client)
+{
+    return SourceMessage("381", client) + MessageTrailing("You are now an IRC operator");
+}

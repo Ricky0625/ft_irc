@@ -79,3 +79,9 @@ std::string ERR_PASSWDMISMATCH(Client *client)
 {
     return ErrorMessage("464", client, "", "Password incorrect");
 }
+
+// 491
+std::string ERR_NOOPERHOST(Client *client)
+{
+    return ErrorMessage("491", client, "", "No O-lines for your host");
+}

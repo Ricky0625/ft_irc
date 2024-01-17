@@ -48,6 +48,7 @@ std::string RPL_ENDOFNAMES(Client *client, const std::string &channelName); // 3
 std::string RPL_MOTD(Client *client, const std::string &motdLine);          // 372
 std::string RPL_MOTDSTART(Client *client);                                  // 375
 std::string RPL_ENDOFMOTD(Client *client);                                  // 376
+std::string RPL_YOUREOPER(Client *client);                                  // 381
 
 // ERRORS
 std::string ERR_NOSUCHNICK(Client *client, const std::string &nickname);          // 401
@@ -69,5 +70,6 @@ std::string ERR_INVITEONLYCHAN(Client *client);                                 
 std::string ERR_BANNEDFROMCHAN(Client *client);                                   // 474
 std::string ERR_BAD_CHANNELKEY(Client *client);                                   // 475
 std::string ERR_BADCHANMASK(Client *client);                                      // 476
+std::string ERR_NOOPERHOST(Client *client);                                       // 491
 
 #endif

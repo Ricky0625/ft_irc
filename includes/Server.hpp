@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/17 14:42:59 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/17 14:54:39 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,6 @@ private:
     // initialization
     void _createServerSocket(const std::string &port);
     void _updateUpTime(void);
-
-    // config file query functions
-    // get a value based on the given section and key
-    // get the section map based on the given section
 
     // monitor list management
     void _addSocketToPollTable(int socketToMonitor, short events);

@@ -6,6 +6,7 @@
 #include "USER.hpp"
 #include "PING.hpp"
 #include "PONG.hpp"
+#include "OPER.hpp"
 #include "QUIT.hpp"
 
 #include "JOIN.hpp"

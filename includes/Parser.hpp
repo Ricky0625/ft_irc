@@ -36,7 +36,8 @@ public:
     static std::string &ltrim(std::string &str);
     static std::string &rtrim(std::string &str);
     static std::string &trim(std::string &str);
-    static void toLowerCase(std::string& input);
+    static void toLowerCase(std::string &input);
+    static void toUpperCase(std::string &input);
     static IRCMessage parseIRCMessage(const std::string &str);
     static void showMessage(const IRCMessage &msg);
     static std::string getTimeNow(void);

@@ -68,6 +68,13 @@ void Parser::toLowerCase(std::string& input) {
 }
 
 /**
+ * @brief Convert a string to uppercase. Bruh. C++98 don't have this shit.
+*/
+void Parser::toUpperCase(std::string& input) {
+    std::transform(input.begin(), input.end(), input.begin(), ::toupper);
+}
+
+/**
  * @brief Parse the request string into a IRCMessage struct
  * @details
  * IRC message typically follow a message structure. Here's a brief overview:
@@ -195,7 +202,7 @@ void Parser::parseConfigFile(const std::string &filename, ConfigMap &configMap)
         {
             // new section
             currentSection = line.substr(1, line.length() - 2);
-            toLowerCase(currentSection);
+            toUpperCase(currentSection);
         }
         else
         {
