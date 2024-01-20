@@ -85,3 +85,15 @@ std::string ERR_NOOPERHOST(Client *client)
 {
     return ErrorMessage("491", client, "", "No O-lines for your host");
 }
+
+// 501
+std::string ERR_UMODEUNKNOWNFLAG(Client *client)
+{
+    return ErrorMessage("501", client, "", "Unknown MODE flag");
+}
+
+// 502
+std::string ERR_USERSDONTMATCH(Client *client)
+{
+    return ErrorMessage("502", client, "", "Cant change mode for other users");
+}

@@ -34,14 +34,11 @@ public:
     ChannelMember *getMember(Client *target);
 
 private:
-    /**
-     * TODO:
-     * 1. modes
-     */
-
     // channel credentials
     std::string _name;
     std::string _password;
+
+    Modes _channelMode;
 
     std::string _topic;
     std::string _topicSetBy;

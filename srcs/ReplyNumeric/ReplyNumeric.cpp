@@ -34,6 +34,12 @@ std::string RPL_MYINFO(Client *client)
     return ":" + std::string(HOST) + " 004 " + (nickname.empty() ? "*" : nickname) + " " + std::string(HOST) + " " + std::string(VERSION) + " io kost k" + CRLF;
 }
 
+// 221
+std::string RPL_UMODEIS(Client *client)
+{
+    return SourceMessage("221", client) + " " + client->networkMode.getModeString() + CRLF;
+}
+
 // 321
 std::string RPL_LISTSTART(Client *client)
 {

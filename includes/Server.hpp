@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/17 14:54:39 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/20 12:15:40 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,12 @@ public:
         ERR_POLLNVAL,
         RECV_FAILED,
     } QuitReason;
+
+    typedef enum ModeType
+    {
+        USERMODE,
+        CHANNELMODE
+    } ModeType;
 
     typedef std::vector<struct pollfd> PollFdList;         // <pollfd>
     typedef std::map<int, struct pollfd> PollTable;        // <socketfd, pollfd>
@@ -72,6 +78,9 @@ public:
 
     void removeClient(int clientFd, QuitReason reason);
 
+    // mode related
+    bool isSupportedMode(char mode, ModeType type) const;
+
     // config file query functions
     std::string getValueFromSection(const std::string &section, const std::string &key);
     Parser::ConfigSection getConfigSection(const std::string &section);
@@ -99,11 +108,15 @@ private:
     ChannelTable _channels;
     CommandFactory *_cmdFactory;
 
+    Modes _supportedUserModes;
+    Modes _supportedChannelModes;
+
     Parser::ConfigMap _config;
 
     // initialization
     void _createServerSocket(const std::string &port);
     void _updateUpTime(void);
+    void _initializeSupportedModes(ModeType type);
 
     // monitor list management
     void _addSocketToPollTable(int socketToMonitor, short events);

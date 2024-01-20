@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:19:02 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/17 14:29:48 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/18 14:42:52 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <algorithm>
 
 #include "Parser.hpp"
 #include "Logger.hpp"
 #include "Color.hpp"
+#include "Modes.hpp"
 
 #define CRLF "\r\n"
 #define SERVER_NAME "capygroove"

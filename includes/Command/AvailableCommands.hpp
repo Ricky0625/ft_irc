@@ -15,6 +15,8 @@
 #include "NAMES.hpp"
 #include "LIST.hpp"
 
+#include "MODE.hpp"
+
 #include "PRIVMSG.hpp"
 #include "NOTICE.hpp"
 

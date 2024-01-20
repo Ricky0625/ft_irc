@@ -14,6 +14,7 @@ public:
 
 private:
     Client *_client;
+    Modes _memberMode;
 };
 
 #endif

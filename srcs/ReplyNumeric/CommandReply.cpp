@@ -36,3 +36,8 @@ std::string RPL_MSG(Client *client, const std::string &target, const std::string
 {
     return ClientHeader(client, client->getNickname()) + (type == PRIVMSG_MSG ? " PRIVMSG " : " NOTICE ") + target + MessageTrailing(msg); 
 }
+
+std::string RPL_MODE(Client *client, const std::string &target, const std::string &modeChanged, const std::string &arg)
+{
+    return ClientHeader(client, client->getNickname()) + " MODE " + target + " " + modeChanged + " " + arg + CRLF;
+}

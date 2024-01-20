@@ -22,10 +22,7 @@ CommandFactory::CommandFactory()
     // _commands["KICK"] = new KICK();
 
     // Server queries
-    // _commands["MODE"] = new MODE();
-
-    // Operator-only command
-    // _commands["KILL"] = new KILL();
+    _commands["MODE"] = new MODE();
 
     // messages
     _commands["PRIVMSG"] = new PRIVMSG();

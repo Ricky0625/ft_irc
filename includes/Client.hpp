@@ -48,6 +48,9 @@ public:
 
     std::string toString(void);
 
+    // network user mode
+    Modes networkMode;
+
 private:
     int _fd;
     std::string _ip;

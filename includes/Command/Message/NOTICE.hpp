@@ -13,7 +13,6 @@ public:
     void initialize(Server &server, const IRCMessage &ircMsg);
     void execute(int clientFd);
 
-protected:
 private:
     std::vector<std::string> _targets;
     std::string _msg;

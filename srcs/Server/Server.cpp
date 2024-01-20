@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/17 14:04:15 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/20 12:25:23 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ Server::Server(const std::string &port, const std::string &password) : _password
     Display::clearScreen();
     Parser::parseConfigFile(CONFIG_PATH, _config);
     Parser::showConfig(_config);
+    _initializeSupportedModes(USERMODE);
+    _initializeSupportedModes(CHANNELMODE);
     Display::displayServerInfo(port, password, getUpTime());
 }
 
@@ -181,6 +183,13 @@ std::string Server::getUpTime() const
     return _upTime;
 }
 
+bool Server::isSupportedMode(char mode, ModeType type) const
+{
+    const Modes &modeObj = (type == USERMODE ? _supportedUserModes : _supportedChannelModes);
+
+    return modeObj.hasMode(mode);
+}
+
 /**
  * @brief Create a server socket based on the given port
  * @details
@@ -211,6 +220,27 @@ void Server::_createServerSocket(const std::string &port)
 void Server::_updateUpTime()
 {
     _upTime = Parser::getTimeNow();
+}
+
+/**
+ * @brief Read the value from the config file and intialize the supported modes
+*/
+void Server::_initializeSupportedModes(ModeType type)
+{
+    const std::string &key = (type == USERMODE ? "user" : "channel");
+    Modes &modeObj = (type == USERMODE ? _supportedUserModes : _supportedChannelModes);
+
+    try
+    {
+        const std::string &allModes = getValueFromSection("MODE", key);
+
+        for (size_t i = 0; i < allModes.size(); i++)
+            modeObj.addMode(allModes[i]);
+    }
+    catch (const std::exception &ex)
+    {
+        return;
+    }
 }
 
 /**

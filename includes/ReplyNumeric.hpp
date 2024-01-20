@@ -9,7 +9,8 @@
 class Client;
 class Channel;
 
-typedef enum MessageType {
+typedef enum MessageType
+{
     PRIVMSG_MSG,
     NOTICE_MSG
 } MessageType;
@@ -30,6 +31,7 @@ std::string RPL_JOIN(Client *newMember, Channel *channel);
 std::string RPL_PART(Client *client, Channel *channel, const std::string &reason);
 std::string RPL_QUIT(Client *client, const std::string &reason);
 std::string RPL_MSG(Client *client, const std::string &target, const std::string &msg, MessageType type = PRIVMSG_MSG);
+std::string RPL_MODE(Client *client, const std::string &target, const std::string &modeChanged, const std::string &arg);
 
 // reply numerics
 std::string RPL_WELCOME(Client *client);                                    // 001
@@ -37,6 +39,7 @@ std::string RPL_YOURHOST(Client *client);                                   // 0
 std::string RPL_CREATED(Client *client, const std::string &upTime);         // 003
 std::string RPL_MYINFO(Client *client);                                     // 004
 std::string RPL_ISUPPORT();                                                 // 005
+std::string RPL_UMODEIS(Client *client);                                    // 221
 std::string RPL_LISTSTART(Client *client);                                  // 321
 std::string RPL_LIST(Client *client, Channel *channel);                     // 322
 std::string RPL_LISTEND(Client *client);                                    // 323
@@ -71,5 +74,7 @@ std::string ERR_BANNEDFROMCHAN(Client *client);                                 
 std::string ERR_BAD_CHANNELKEY(Client *client);                                   // 475
 std::string ERR_BADCHANMASK(Client *client);                                      // 476
 std::string ERR_NOOPERHOST(Client *client);                                       // 491
+std::string ERR_UMODEUNKNOWNFLAG(Client *client);                                 // 501
+std::string ERR_USERSDONTMATCH(Client *client);                                   // 502
 
 #endif
