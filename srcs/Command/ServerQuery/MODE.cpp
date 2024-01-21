@@ -45,13 +45,6 @@ void MODE::execute(int clientFd)
     }
     else
         _handleUserQuery(client);
-
-    /**
-     * if target is a nickname that does not exist on the network, ERR_NOSUCHNICK
-     * if target is a different nick than the user who sent the command, ERR_USERDONTMATCH
-     *
-     * if ok, RPL_UMODEIS, sent back current modes of the target user.
-     */
 }
 
 void MODE::_handleUserQuery(Client *client)
@@ -74,9 +67,7 @@ void MODE::_handleUserQuery(Client *client)
     if (argCount == 1) // MODE <target>
         client->enqueueBuffer(SEND, RPL_UMODEIS(client));
     else if (argCount > 1) // MODE <target> <modestring>
-    {
         _appplyUserMode(client);
-    }
 }
 
 void MODE::_appplyUserMode(Client *client)

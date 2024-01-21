@@ -4,7 +4,7 @@
 Client::Client(int fd, const std::string ip) :
     _fd(fd), _ip(ip),
     _lastPing(std::time(0)),
-    _isRegistered(false), _isAuthenticated(false), _isNetworkOperator(false),
+    _isRegistered(false), _isAuthenticated(false),
     _nickname(""), _realname(""), _username(""),
     _readBuffer(""), _sendBuffer("")
 {
@@ -21,11 +21,6 @@ void Client::setRegistered(const bool &status)
 void Client::setAuthenticated(const bool &status)
 {
     _isAuthenticated = status;
-}
-
-void Client::setIsNetworkOperator(const bool &status)
-{
-    _isNetworkOperator = status;
 }
 
 void Client::setNickname(const std::string &name)
@@ -74,11 +69,6 @@ bool Client::isWelcomeRequired(void)
 bool Client::isAuthenticated(void) const
 {
     return _isAuthenticated;
-}
-
-bool Client::isNetworkOperator(void) const
-{
-    return _isNetworkOperator;
 }
 
 std::string Client::getNickname(void) const

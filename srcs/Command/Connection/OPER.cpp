@@ -33,7 +33,7 @@ void OPER::execute(int clientFd)
         return;
     }
 
-    if (client->isNetworkOperator())
+    if (client->networkMode.hasMode('o'))
         return;
 
     try {
@@ -47,7 +47,7 @@ void OPER::execute(int clientFd)
         }
 
         client->enqueueBuffer(SEND, RPL_YOUREOPER(client));
-        client->setIsNetworkOperator(true);
+        client->networkMode.addMode('o'); // add operator mode
     }
     catch (const std::exception &ex) {
         (void)ex;

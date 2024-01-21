@@ -18,7 +18,6 @@ public:
     // setter
     void setRegistered(const bool &status);
     void setAuthenticated(const bool &status);
-    void setIsNetworkOperator(const bool &status);
     void setNickname(const std::string &name);
     void setRealname(const std::string &name);
     void setUsername(const std::string &name);
@@ -26,7 +25,6 @@ public:
     // getter
     bool isRegistered(void);
     bool isAuthenticated(void) const;
-    bool isNetworkOperator(void) const;
     std::string getNickname(void) const;
     std::string getRealname(void) const;
     std::string getUsername(void) const;
@@ -59,7 +57,6 @@ private:
     // booleans
     bool _isRegistered;
     bool _isAuthenticated;
-    bool _isNetworkOperator;
 
     // identity
     std::string _nickname;
