@@ -96,13 +96,11 @@ void Channel::setPassword(const std::string &password)
  */
 void Channel::setTopic(const std::string &topic)
 {
-    std::cout << "set topic" << std::endl;
     _topic = topic;
 }
 
 void Channel::setTopicSetBy(const std::string &nickname)
 {
-    std::cout << "set nickname" << std::endl;
     _topicSetBy = nickname;
 }
 

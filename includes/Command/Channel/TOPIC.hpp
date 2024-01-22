@@ -17,6 +17,8 @@ private:
     std::string _channel;
     std::string _msg;
     bool _hasMsg;
+
+    void _broadcastNewTopic(Client *client, Channel *channel);
 };
 
 #endif

@@ -36,7 +36,7 @@ void TOPIC::initialize(Server &server, const IRCMessage &ircMsg)
  * RPL_NOTOPIC (331)
  * RPL_TOPIC (332)
  * RPL_TOPICWHOTIME (333)
-*/
+ */
 void TOPIC::execute(int clientFd)
 {
     Server &server = *_server;
@@ -46,7 +46,7 @@ void TOPIC::execute(int clientFd)
 
     if (client == NULL || !(client->isAuthenticated() && client->isRegistered()))
         return;
-    
+
     if (getArgs().size() < 1)
     {
         client->enqueueBuffer(SEND, ERR_NEEDMOREPARAMS(client, "TOPIC"));
@@ -85,9 +85,20 @@ void TOPIC::execute(int clientFd)
         return;
     }
 
-    /**
-     * TODO: broadcast to members
-    */
-    client->enqueueBuffer(SEND, RPL_TOPIC(client, targetChannel));
-    client->enqueueBuffer(SEND, RPL_TOPICWHOTIME(client, targetChannel)); 
+    _broadcastNewTopic(client, targetChannel);
+}
+
+void TOPIC::_broadcastNewTopic(Client *client, Channel *channel)
+{
+    Channel::MemberTable members = channel->getMembers();
+    Client *target;
+    Server &server = *_server;
+
+    for (Channel::MemberTable::iterator it = members.begin(); it != members.end(); it++)
+    {
+        target = it->second->getClientInfo();
+        server.subscribeEvent(target->getFd(), POLLOUT);
+        target->enqueueBuffer(SEND, RPL_TOPIC(client, channel));
+        target->enqueueBuffer(SEND, RPL_TOPICWHOTIME(client, channel));
+    }
 }
