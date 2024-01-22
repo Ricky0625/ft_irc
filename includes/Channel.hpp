@@ -17,7 +17,7 @@ public:
     std::string getTopic(void) const;
     std::string getTopicSetBy(void) const;
     std::string getTopicSetAt(void) const;
-    std::string getAllMembersAsString(void) const;
+    std::string getAllMembersAsString(const std::string &sender) const;
     MemberTable getMembers(void) const;
     int getMemberTotal(void) const;
 

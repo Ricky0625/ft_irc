@@ -35,21 +35,17 @@ std::string Channel::getTopicSetAt(void) const
     return _topicSetAt;
 }
 
-std::string Channel::getAllMembersAsString(void) const
+std::string Channel::getAllMembersAsString(const std::string &sender) const
 {
     std::string membersStr = "";
     Client *clientInfo;
+    bool isSenderInsideChannel = _members.find(sender) != _members.end();
 
     for (MemberTable::const_iterator it = _members.begin(); it != _members.end(); it++)
     {
         clientInfo = it->second->getClientInfo();
-        /**
-         * TODO:
-         * 1. Check their highest channel membership prefix and append to it
-         *
-         * Idea:
-         * With multiple if else to check if a prefix exists, from the lowest to highest
-         */
+        if (clientInfo->networkMode.hasMode('i') && isSenderInsideChannel == false)
+            continue;
         membersStr += clientInfo->getNickname() + " ";
     }
 

@@ -11,10 +11,10 @@ public:
     ~ChannelMember(void);
 
     Client *getClientInfo(void) const;
+    Modes memberMode;
 
 private:
     Client *_client;
-    Modes _memberMode;
 };
 
 #endif

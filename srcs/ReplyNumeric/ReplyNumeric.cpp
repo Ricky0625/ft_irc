@@ -82,7 +82,7 @@ std::string RPL_NAMREPLY(Client *client, Channel *channel)
     /**
      * TODO: channel symbol '='
      */
-    return SourceMessage("353", client) + " = " + channel->getName() + MessageTrailing(channel->getAllMembersAsString());
+    return SourceMessage("353", client) + " = " + channel->getName() + MessageTrailing(channel->getAllMembersAsString(client->getNickname()));
 }
 
 // 366
