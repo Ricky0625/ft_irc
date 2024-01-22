@@ -19,8 +19,9 @@ public:
     std::string getTopicSetAt(void) const;
     std::string getAllMembersAsString(const std::string &sender) const;
     MemberTable getMembers(void) const;
-    int getMemberTotal(void) const;
+    size_t getMemberTotal(void) const;
     size_t getMemberLimit(void) const;
+    bool isCorrectPassword(const std::string &pass) const;
 
     // setters
     void setPassword(const std::string &password);

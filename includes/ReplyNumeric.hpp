@@ -69,11 +69,9 @@ std::string ERR_NOTONCHANNEL(Client *client, Channel *channel);                 
 std::string ERR_NEEDMOREPARAMS(Client *client, const std::string &command);       // 461
 std::string ERR_ALREADYREGISTERED(Client *client);                                // 462
 std::string ERR_PASSWDMISMATCH(Client *client);                                   // 464
-std::string ERR_CHANNELISFULL(Client *client);                                    // 471
-std::string ERR_INVITEONLYCHAN(Client *client);                                   // 473
-std::string ERR_BANNEDFROMCHAN(Client *client);                                   // 474
-std::string ERR_BAD_CHANNELKEY(Client *client);                                   // 475
-std::string ERR_BADCHANMASK(Client *client);                                      // 476
+std::string ERR_CHANNELISFULL(Client *client, const std::string &channelName);    // 471
+std::string ERR_INVITEONLYCHAN(Client *client, const std::string &channelName);   // 473
+std::string ERR_BAD_CHANNELKEY(Client *client, const std::string &channelName);   // 475
 std::string ERR_CHANOPRIVSNEEDED(Client *client, const std::string &channelName); // 482
 std::string ERR_NOOPERHOST(Client *client);                                       // 491
 std::string ERR_UMODEUNKNOWNFLAG(Client *client);                                 // 501

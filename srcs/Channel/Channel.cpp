@@ -68,7 +68,7 @@ Channel::MemberTable Channel::getMembers(void) const
     return _members;
 }
 
-int Channel::getMemberTotal(void) const
+size_t Channel::getMemberTotal(void) const
 {
     return _members.size();
 }
@@ -76,6 +76,11 @@ int Channel::getMemberTotal(void) const
 size_t Channel::getMemberLimit(void) const
 {
     return _memberLimit;
+}
+
+bool Channel::isCorrectPassword(const std::string &pass) const
+{
+    return _password == pass;
 }
 
 /**

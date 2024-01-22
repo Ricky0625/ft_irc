@@ -80,6 +80,24 @@ std::string ERR_PASSWDMISMATCH(Client *client)
     return ErrorMessage("464", client, "", "Password incorrect");
 }
 
+// 471
+std::string ERR_CHANNELISFULL(Client *client, const std::string &channelName)
+{
+    return ChannelSimpleMessage("471", client, channelName, "Cannot join channel (+l)");
+}
+
+// 473
+std::string ERR_INVITEONLYCHAN(Client *client, const std::string &channelName)
+{
+    return ChannelSimpleMessage("471", client, channelName, "Cannot join channel (+i)");
+}
+
+// 475
+std::string ERR_BAD_CHANNELKEY(Client *client, const std::string &channelName)
+{
+    return ChannelSimpleMessage("475", client, channelName, "Cannot join channel (+k)");
+}
+
 // 482
 std::string ERR_CHANOPRIVSNEEDED(Client *client, const std::string &channelName)
 {

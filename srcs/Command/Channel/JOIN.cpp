@@ -65,10 +65,11 @@ void JOIN::execute(int clientFd)
 
     /**
      * TODO: password protected channel
-    */
+     */
     for (size_t i = 0; i < _chanNames.size(); i++)
     {
         const std::string &channelName = _chanNames[i];
+        const std::string &channelPass = _chanPass.size() == 0 ? "" : _chanPass[i];
 
         if (channelName[0] != '#')
         {
@@ -79,6 +80,27 @@ void JOIN::execute(int clientFd)
         targetChannel = server.getChannel(channelName);
         if (targetChannel == NULL)
             targetChannel = server.addNewChannel(channelName);
+
+        // if client-limit mode is enabled
+        if (targetChannel->channelModes.hasMode('l') && targetChannel->getMemberTotal() >= targetChannel->getMemberLimit())
+        {
+            client->enqueueBuffer(SEND, ERR_CHANNELISFULL(client, targetChannel->getName()));
+            continue;
+        }
+
+        // if invite-only mode is enabled
+        // if (targetChannel->channelModes.hasMode('i'))
+        // {
+        //     client->enqueueBuffer(SEND, ERR_INVITEONLYCHAN(client, targetChannel->getName()));
+        //     continue;
+        // }
+
+        // if key mode is enabled
+        if (targetChannel->channelModes.hasMode('k') && targetChannel->isCorrectPassword(channelPass) == false)
+        {
+            client->enqueueBuffer(SEND, ERR_BAD_CHANNELKEY(client, targetChannel->getName()));
+            continue;
+        }
 
         if (targetChannel->addMember(client))
         {
