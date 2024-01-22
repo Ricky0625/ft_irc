@@ -43,10 +43,12 @@ std::string Channel::getAllMembersAsString(const std::string &sender) const
 
     for (MemberTable::const_iterator it = _members.begin(); it != _members.end(); it++)
     {
+        Modes &currentMemberModes = it->second->memberMode;
+        const std::string &prefix = currentMemberModes.hasMode('o') ? "@" : "";
         clientInfo = it->second->getClientInfo();
         if (clientInfo->networkMode.hasMode('i') && isSenderInsideChannel == false)
             continue;
-        membersStr += clientInfo->getNickname() + " ";
+        membersStr += prefix + clientInfo->getNickname() + " ";
     }
 
     return membersStr;
@@ -96,12 +98,17 @@ void Channel::updateTopicSetAt(void)
  */
 bool Channel::addMember(Client *client)
 {
+    bool isChannelFounder = false;
     const std::string &nickname = client->getNickname();
 
     if (_members.find(nickname) != _members.end())
         return false;
 
+    if (_members.size() == 0)
+        isChannelFounder = true;
     _members[nickname] = new ChannelMember(client);
+    if (isChannelFounder)
+        _members[nickname]->memberMode.addMode('o');
     return true;
 }
 
