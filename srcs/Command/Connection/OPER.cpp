@@ -48,6 +48,7 @@ void OPER::execute(int clientFd)
 
         client->enqueueBuffer(SEND, RPL_YOUREOPER(client));
         client->networkMode.addMode('o'); // add operator mode
+        client->enqueueBuffer(SEND, RPL_MODE(client, client->getNickname(), "+o", ""));
     }
     catch (const std::exception &ex) {
         (void)ex;

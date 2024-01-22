@@ -89,7 +89,11 @@ void MODE::_appplyUserMode(Client *client)
             action = REMOVEMODE;
             continue;
         }
-        else if (action == NOACTION || mode == 'o')
+        else if (action == NOACTION)
+            continue;
+
+        // avoid user get network operator access via MODE
+        if (mode == 'o' && action == ADDMODE)
             continue;
 
         if (server.isSupportedMode(mode, Server::USERMODE))
