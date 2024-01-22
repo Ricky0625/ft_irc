@@ -42,6 +42,7 @@ void TOPIC::execute(int clientFd)
     Server &server = *_server;
     Client *client = server.getClient(clientFd);
     Channel *targetChannel;
+    ChannelMember *member;
 
     if (client == NULL || !(client->isAuthenticated() && client->isRegistered()))
         return;
@@ -59,11 +60,16 @@ void TOPIC::execute(int clientFd)
         return;
     }
 
-    if (targetChannel->getMember(client) == NULL)
+    member = targetChannel->getMember(client);
+    if (member == NULL)
     {
         client->enqueueBuffer(SEND, ERR_NOTONCHANNEL(client, targetChannel));
         return;
     }
+
+    // if topic locked mode is enabled
+    if (targetChannel->channelModes.hasMode('t') && member->memberMode.hasMode('o') == false)
+        return;
 
     // if has message, update TOPIC
     if (_hasMsg)
@@ -79,6 +85,9 @@ void TOPIC::execute(int clientFd)
         return;
     }
 
+    /**
+     * TODO: broadcast to members
+    */
     client->enqueueBuffer(SEND, RPL_TOPIC(client, targetChannel));
     client->enqueueBuffer(SEND, RPL_TOPICWHOTIME(client, targetChannel)); 
 }

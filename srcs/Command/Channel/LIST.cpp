@@ -58,15 +58,12 @@ void LIST::_listAllChannels(Client *client)
     Server::ChannelTable allChannels = server.getChannels();
     Channel *targetChannel;
 
-    /**
-     * TODO:
-     * - hide secret channels
-     */
-
     client->enqueueBuffer(SEND, RPL_LISTSTART(client));
     for (Server::ChannelTable::iterator it = allChannels.begin(); it != allChannels.end(); it++)
     {
         targetChannel = it->second;
+        if (targetChannel->channelModes.hasMode('s') && targetChannel->getMember(client) == NULL)
+            continue;
         client->enqueueBuffer(SEND, RPL_LIST(client, targetChannel));
     }
     client->enqueueBuffer(SEND, RPL_LISTEND(client));
