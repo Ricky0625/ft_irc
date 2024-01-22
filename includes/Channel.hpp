@@ -20,11 +20,13 @@ public:
     std::string getAllMembersAsString(const std::string &sender) const;
     MemberTable getMembers(void) const;
     int getMemberTotal(void) const;
+    size_t getMemberLimit(void) const;
 
     // setters
     void setPassword(const std::string &password);
     void setTopic(const std::string &topic);
     void setTopicSetBy(const std::string &nickname);
+    void setMemberLimit(int limit);
     void updateTopicSetAt(void);
 
     // member management
@@ -33,16 +35,20 @@ public:
     void removeAllMembers(void);
     ChannelMember *getMember(Client *target);
 
+    Modes channelModes;
+
 private:
     // channel credentials
     std::string _name;
     std::string _password;
 
-    Modes _channelMode;
-
     std::string _topic;
     std::string _topicSetBy;
     std::string _topicSetAt;
+
+    size_t _memberLimit; // don't rely on the value here to check if the mode is set or not.
+
+    // std::set<std::string> _invitations;
 
     MemberTable _members;
 };

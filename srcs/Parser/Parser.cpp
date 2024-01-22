@@ -239,3 +239,13 @@ void Parser::showConfig(const ConfigMap &configMap)
         }
     }
 }
+
+bool Parser::isStringAllDigits(const std::string& str) {
+
+    for (size_t i = 0; i < str.size(); i++)
+    {
+        if (isdigit(str[i]) == false)
+            return false;
+    }
+    return true;
+}

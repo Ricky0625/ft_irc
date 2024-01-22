@@ -1,7 +1,7 @@
 #include "MODE.hpp"
 
 // default constructor
-MODE::MODE(void) : _target(""), _modeString("") {}
+MODE::MODE(void) : _target(""), _modeString(""), _currentModeArgsIndex(0) {}
 
 void MODE::initialize(Server &server, const IRCMessage &ircMsg)
 {
@@ -16,6 +16,8 @@ void MODE::initialize(Server &server, const IRCMessage &ircMsg)
         return;
 
     _target = args[0];
+
+    _currentModeArgsIndex = 0;
 
     if (argCount > 1)
         _modeString = args[1];
@@ -40,9 +42,7 @@ void MODE::execute(int clientFd)
     }
 
     if (_target[0] == '#')
-    {
-        // handle channel related queries
-    }
+        _handleChannelQuery(client);
     else
         _handleUserQuery(client);
 }
@@ -115,5 +115,194 @@ void MODE::_appplyUserMode(Client *client)
 
 void MODE::_handleChannelQuery(Client *client)
 {
-    (void)client;
+    Server &server = *_server;
+    Channel *channel = server.getChannel(_target);
+    ChannelMember *sender = channel->getMember(client);
+    size_t argCount = getArgs().size();
+
+    // don't know what to do here, documentation didn't mention anything
+    if (sender == NULL)
+        return;
+
+    if (channel == NULL)
+    {
+        client->enqueueBuffer(SEND, ERR_NOSUCHCHANNEL(client, _target));
+        return;
+    }
+
+    if (argCount == 1) // MODE <target>
+        client->enqueueBuffer(SEND, RPL_CHANNELMODEIS(client, channel));
+    else if (argCount > 1)
+    {
+        // if sender is not a chanop
+        if (sender->memberMode.hasMode('o') == false)
+        {
+            client->enqueueBuffer(SEND, ERR_CHANOPRIVSNEEDED(client, channel->getName()));
+            return;
+        }
+        _applyChannelMode(client, channel);
+    }
+}
+
+void MODE::_applyChannelMode(Client *client, Channel *channel)
+{
+    Server &server = *_server;
+    ModeApplyAction action = NOACTION;
+
+    for (size_t i = 0; i < _modeString.size(); i++)
+    {
+        char &mode = _modeString[i];
+
+        if (mode == '+')
+        {
+            action = ADDMODE;
+            continue;
+        }
+        else if (mode == '-')
+        {
+            action = REMOVEMODE;
+            continue;
+        }
+        else if (action == NOACTION)
+            continue;
+
+        // to update membership
+        if (mode == 'o' || mode == 'v')
+            _updateMemberMembership();
+        else if (server.isSupportedMode(mode, Server::CHANNELMODE))
+            _changeChannelSettings(client, channel, action, mode);
+        else
+            client->enqueueBuffer(SEND, ERR_UMODEUNKNOWNFLAG(client));
+    }
+}
+
+void MODE::_changeChannelSettings(Client *client, Channel *channel, ModeApplyAction action, char mode)
+{
+    // the logic here are the modes that this IRC server implements
+    /**
+     * l - client limit (JOIN), got argument
+     * k - key channel (JOIN), got argument
+     * i - invite only (JOIN)
+     * m - moderated channel (PRIVMSG)
+     * s - secret channel (LIST)
+     * t - topic-locked (TOPIC)
+     *
+     * update membership
+     * v - voice member (PRIVMSG)
+     * o - chanops (MODE)
+     */
+
+    switch (mode)
+    {
+    case 'l':
+        _setClientLimitMode(client, channel, action, mode);
+        break;
+
+    case 'k':
+        _setKeyMode(client, channel, action, mode);
+        break;
+
+    case 'i':
+        _performModeAction(client, channel, action, mode);
+        break;
+
+    case 'm':
+        _performModeAction(client, channel, action, mode);
+        break;
+
+    case 's':
+        _performModeAction(client, channel, action, mode);
+        break;
+
+    case 't':
+        _performModeAction(client, channel, action, mode);
+        break;
+
+    default:
+        break;
+    }
+}
+
+void MODE::_updateMemberMembership()
+{
+}
+
+void MODE::_setClientLimitMode(Client *client, Channel *channel, ModeApplyAction action, char mode)
+{
+    std::string modeChanged;
+    std::string arg;
+
+    if (action == ADDMODE)
+    {
+        if (_modeArgs.size() == 0 || (_currentModeArgsIndex + 1) > _modeArgs.size())
+        {
+            std::cout << _modeArgs.size() << " " << _currentModeArgsIndex << std::endl;
+            std::cout << "hey" << std::endl;
+            return;
+        }
+
+        arg = _modeArgs[_currentModeArgsIndex];
+
+        if (Parser::isStringAllDigits(arg) == false)
+        {
+            std::cout << arg << std::endl;
+            return;
+        }
+
+        int limit = std::atoi(arg.c_str());
+        std::cout << limit << std::endl;
+        channel->setMemberLimit(limit);
+        _currentModeArgsIndex++;
+        channel->channelModes.addMode(mode);
+    }
+    else if (action == REMOVEMODE && channel->channelModes.hasMode(mode) == true)
+    {
+        channel->setMemberLimit(0);
+        channel->channelModes.removeMode(mode);
+    }
+    else
+        return;
+
+    modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
+    client->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, arg));
+}
+
+void MODE::_setKeyMode(Client *client, Channel *channel, ModeApplyAction action, char mode)
+{
+    std::string modeChanged = "";
+
+    if (action == ADDMODE)
+    {
+        if (_modeArgs.size() == 0 || (_currentModeArgsIndex + 1) > _modeArgs.size())
+            return;
+
+        channel->setPassword(_modeArgs[_currentModeArgsIndex]);
+        _currentModeArgsIndex++;
+        channel->channelModes.addMode(mode);
+    }
+    else if (action == REMOVEMODE && channel->channelModes.hasMode(mode) == true)
+    {
+        channel->setPassword("");
+        channel->channelModes.removeMode(mode);
+    }
+    else
+        return;
+
+    modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
+    client->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, ""));
+}
+
+void MODE::_performModeAction(Client *client, Channel *channel, ModeApplyAction action, char mode)
+{
+    std::string modeChanged = "";
+
+    if (action == ADDMODE && channel->channelModes.hasMode(mode) == false)
+        channel->channelModes.addMode(mode);
+    else if (action == REMOVEMODE && channel->channelModes.hasMode(mode) == true)
+        channel->channelModes.removeMode(mode);
+    else
+        return;
+
+    modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
+    client->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, ""));
 }

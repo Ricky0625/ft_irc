@@ -80,6 +80,12 @@ std::string ERR_PASSWDMISMATCH(Client *client)
     return ErrorMessage("464", client, "", "Password incorrect");
 }
 
+// 482
+std::string ERR_CHANOPRIVSNEEDED(Client *client, const std::string &channelName)
+{
+    return ChannelSimpleMessage("482", client, channelName, "You're not channel operator");
+}
+
 // 491
 std::string ERR_NOOPERHOST(Client *client)
 {

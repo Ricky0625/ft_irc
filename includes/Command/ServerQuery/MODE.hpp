@@ -27,12 +27,22 @@ private:
     std::string _modeString;
     Args _modeArgs;
 
+    size_t _currentModeArgsIndex;
+
     // handle user related query
     void _handleUserQuery(Client *client);
     void _appplyUserMode(Client *client);
 
     // handle channel related query
     void _handleChannelQuery(Client *client);
+    void _applyChannelMode(Client *client, Channel *channel);
+    void _changeChannelSettings(Client *client, Channel *channel, ModeApplyAction action, char mode);
+
+    // all the logic for channel mode (we only implement theses)
+    void _updateMemberMembership();
+    void _setClientLimitMode(Client *client, Channel *channel, ModeApplyAction action, char mode);
+    void _setKeyMode(Client *client, Channel *channel, ModeApplyAction action, char mode);
+    void _performModeAction(Client *client, Channel *channel, ModeApplyAction action, char mode);
 };
 
 #endif

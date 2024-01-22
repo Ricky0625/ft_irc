@@ -44,6 +44,7 @@ public:
     static std::string getUnixTimeStamp(void);
     static void parseConfigFile(const std::string &filename, ConfigMap &configMap);
     static void showConfig(const ConfigMap &configMap);
+    static bool isStringAllDigits(const std::string &str);
 
     template <typename T>
     static std::string to_string(const T& n)

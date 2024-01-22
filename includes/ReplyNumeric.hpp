@@ -43,6 +43,7 @@ std::string RPL_UMODEIS(Client *client);                                    // 2
 std::string RPL_LISTSTART(Client *client);                                  // 321
 std::string RPL_LIST(Client *client, Channel *channel);                     // 322
 std::string RPL_LISTEND(Client *client);                                    // 323
+std::string RPL_CHANNELMODEIS(Client *client, Channel *channel);            // 324
 std::string RPL_NOTOPIC(Client *client, Channel *channel);                  // 331
 std::string RPL_TOPIC(Client *client, Channel *channel);                    // 332
 std::string RPL_TOPICWHOTIME(Client *client, Channel *channel);             // 333
@@ -73,6 +74,7 @@ std::string ERR_INVITEONLYCHAN(Client *client);                                 
 std::string ERR_BANNEDFROMCHAN(Client *client);                                   // 474
 std::string ERR_BAD_CHANNELKEY(Client *client);                                   // 475
 std::string ERR_BADCHANMASK(Client *client);                                      // 476
+std::string ERR_CHANOPRIVSNEEDED(Client *client, const std::string &channelName); // 482
 std::string ERR_NOOPERHOST(Client *client);                                       // 491
 std::string ERR_UMODEUNKNOWNFLAG(Client *client);                                 // 501
 std::string ERR_USERSDONTMATCH(Client *client);                                   // 502

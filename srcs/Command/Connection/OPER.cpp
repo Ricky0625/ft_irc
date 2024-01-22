@@ -17,7 +17,7 @@ void OPER::initialize(Server &server, const IRCMessage &ircMsg)
 }
 
 /**
- * TODO: secret channel mode, invisible user mode
+ * @brief Request to be network operator
 */
 void OPER::execute(int clientFd)
 {

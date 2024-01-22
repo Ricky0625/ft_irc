@@ -58,6 +58,12 @@ std::string RPL_LISTEND(Client *client)
     return SourceMessage("323", client) + MessageTrailing(":End of /LIST");
 }
 
+// 324
+std::string RPL_CHANNELMODEIS(Client *client, Channel *channel)
+{
+    return SourceMessage("324", client) + " " + channel->getName() + " " + channel->channelModes.getModeString() + "" + CRLF;
+}
+
 // 331
 std::string RPL_NOTOPIC(Client *client, Channel *channel)
 {

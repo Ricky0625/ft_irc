@@ -11,6 +11,10 @@ Channel *Server::addNewChannel(const std::string &channelName)
 
     _channels[channelName] = new Channel(channelName);
 
+    // default mode is topic-locked mode, but if the config file does not have this, ok loh nvm.
+    if (_supportedChannelModes.hasMode('t'))
+        _channels[channelName]->channelModes.addMode('t');
+
     Display::displayServerAction(_serverFd, "Server added new channel. `Server::_addNewChannel`");
 
     return _channels[channelName];

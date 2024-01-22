@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
 // default constructor
-Channel::Channel(const std::string &name) : _name(name), _password("") {}
+Channel::Channel(const std::string &name) : _name(name), _password(""), _memberLimit(0) {}
 
 // destructor
 Channel::~Channel()
@@ -35,6 +35,15 @@ std::string Channel::getTopicSetAt(void) const
     return _topicSetAt;
 }
 
+static std::string getMemberPrefix(const Modes &modes)
+{
+    if (modes.hasMode('o'))
+        return "@";
+    else if (modes.hasMode('v'))
+        return "+";
+    return "";
+}
+
 std::string Channel::getAllMembersAsString(const std::string &sender) const
 {
     std::string membersStr = "";
@@ -44,7 +53,7 @@ std::string Channel::getAllMembersAsString(const std::string &sender) const
     for (MemberTable::const_iterator it = _members.begin(); it != _members.end(); it++)
     {
         Modes &currentMemberModes = it->second->memberMode;
-        const std::string &prefix = currentMemberModes.hasMode('o') ? "@" : "";
+        const std::string &prefix = getMemberPrefix(currentMemberModes);
         clientInfo = it->second->getClientInfo();
         if (clientInfo->networkMode.hasMode('i') && isSenderInsideChannel == false)
             continue;
@@ -62,6 +71,11 @@ Channel::MemberTable Channel::getMembers(void) const
 int Channel::getMemberTotal(void) const
 {
     return _members.size();
+}
+
+size_t Channel::getMemberLimit(void) const
+{
+    return _memberLimit;
 }
 
 /**
@@ -85,6 +99,14 @@ void Channel::setTopicSetBy(const std::string &nickname)
 {
     std::cout << "set nickname" << std::endl;
     _topicSetBy = nickname;
+}
+
+void Channel::setMemberLimit(int limit)
+{
+    if (limit < 0)
+        _memberLimit = 0;
+    else
+        _memberLimit = limit;
 }
 
 void Channel::updateTopicSetAt(void)
