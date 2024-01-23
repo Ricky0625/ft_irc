@@ -166,9 +166,9 @@ void MODE::_applyChannelMode(Client *client, Channel *channel)
         else if (action == NOACTION)
             continue;
 
-        // to update membership
+        // to update membership (hardcode)
         if (mode == 'o' || mode == 'v')
-            _updateMemberMembership();
+            _updateMemberMembership(client, channel, action, mode);
         else if (server.isSupportedMode(mode, Server::CHANNELMODE))
             _changeChannelSettings(client, channel, action, mode);
         else
@@ -223,36 +223,49 @@ void MODE::_changeChannelSettings(Client *client, Channel *channel, ModeApplyAct
     }
 }
 
-void MODE::_updateMemberMembership()
+void MODE::_updateMemberMembership(Client *client, Channel *channel, ModeApplyAction action, char mode)
 {
+    std::string modeChanged = "";
+    std::string target;
+    ChannelMember *member;
+
+    if (_modeArgs.size() == 0 || (_currentModeArgsIndex + 1) > _modeArgs.size())
+        return;
+
+    target = _modeArgs[_currentModeArgsIndex++];
+    member = channel->getMemberUsingNickname(target);
+
+    if (member == NULL)
+        return;
+
+    if (action == ADDMODE && member->memberMode.hasMode(mode) == false)
+        member->memberMode.addMode(mode);
+    else if (action == REMOVEMODE && member->memberMode.hasMode(mode))
+        member->memberMode.removeMode(mode);
+    else
+        return;
+    
+    modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
+    _broadcastModeUpdate(client, channel, modeChanged, target);
 }
 
 void MODE::_setClientLimitMode(Client *client, Channel *channel, ModeApplyAction action, char mode)
 {
-    std::string modeChanged;
+    std::string modeChanged = "";
     std::string arg;
 
     if (action == ADDMODE)
     {
         if (_modeArgs.size() == 0 || (_currentModeArgsIndex + 1) > _modeArgs.size())
-        {
-            std::cout << _modeArgs.size() << " " << _currentModeArgsIndex << std::endl;
-            std::cout << "hey" << std::endl;
             return;
-        }
 
-        arg = _modeArgs[_currentModeArgsIndex];
+        arg = _modeArgs[_currentModeArgsIndex++];
 
         if (Parser::isStringAllDigits(arg) == false)
-        {
-            std::cout << arg << std::endl;
             return;
-        }
 
         int limit = std::atoi(arg.c_str());
-        std::cout << limit << std::endl;
         channel->setMemberLimit(limit);
-        _currentModeArgsIndex++;
         channel->channelModes.addMode(mode);
     }
     else if (action == REMOVEMODE && channel->channelModes.hasMode(mode) == true)
@@ -264,7 +277,7 @@ void MODE::_setClientLimitMode(Client *client, Channel *channel, ModeApplyAction
         return;
 
     modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
-    client->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, arg));
+    _broadcastModeUpdate(client, channel, modeChanged, arg);
 }
 
 void MODE::_setKeyMode(Client *client, Channel *channel, ModeApplyAction action, char mode)
@@ -276,8 +289,7 @@ void MODE::_setKeyMode(Client *client, Channel *channel, ModeApplyAction action,
         if (_modeArgs.size() == 0 || (_currentModeArgsIndex + 1) > _modeArgs.size())
             return;
 
-        channel->setPassword(_modeArgs[_currentModeArgsIndex]);
-        _currentModeArgsIndex++;
+        channel->setPassword(_modeArgs[_currentModeArgsIndex++]);
         channel->channelModes.addMode(mode);
     }
     else if (action == REMOVEMODE && channel->channelModes.hasMode(mode) == true)
@@ -289,7 +301,7 @@ void MODE::_setKeyMode(Client *client, Channel *channel, ModeApplyAction action,
         return;
 
     modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
-    client->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, ""));
+    _broadcastModeUpdate(client, channel, modeChanged, "");
 }
 
 void MODE::_performModeAction(Client *client, Channel *channel, ModeApplyAction action, char mode)
@@ -304,5 +316,19 @@ void MODE::_performModeAction(Client *client, Channel *channel, ModeApplyAction 
         return;
 
     modeChanged += (action == ADDMODE ? "+" : "-") + std::string(1, mode);
-    client->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, ""));
+    _broadcastModeUpdate(client, channel, modeChanged, "");
+}
+
+void MODE::_broadcastModeUpdate(Client *client, Channel *channel, const std::string &modeChanged, const std::string &arg)
+{
+    Channel::MemberTable members = channel->getMembers();
+    Client *target;
+    Server &server = *_server;
+
+    for (Channel::MemberTable::iterator it = members.begin(); it != members.end(); it++)
+    {
+        target = it->second->getClientInfo();
+        server.subscribeEvent(target->getFd(), POLLOUT);
+        target->enqueueBuffer(SEND, RPL_MODE(client, _target, modeChanged, arg));
+    }
 }

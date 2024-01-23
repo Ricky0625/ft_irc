@@ -39,10 +39,12 @@ private:
     void _changeChannelSettings(Client *client, Channel *channel, ModeApplyAction action, char mode);
 
     // all the logic for channel mode (we only implement theses)
-    void _updateMemberMembership();
+    void _updateMemberMembership(Client *client, Channel *channel, ModeApplyAction action, char mode);
     void _setClientLimitMode(Client *client, Channel *channel, ModeApplyAction action, char mode);
     void _setKeyMode(Client *client, Channel *channel, ModeApplyAction action, char mode);
     void _performModeAction(Client *client, Channel *channel, ModeApplyAction action, char mode);
+
+    void _broadcastModeUpdate(Client *client, Channel *channel, const std::string &modeChanged, const std::string &arg);
 };
 
 #endif

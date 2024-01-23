@@ -83,6 +83,16 @@ bool Channel::isCorrectPassword(const std::string &pass) const
     return _password == pass;
 }
 
+ChannelMember *Channel::getMemberUsingNickname(const std::string &nickname)
+{
+    MemberTable::iterator entry = _members.find(nickname);
+
+    if (entry == _members.end())
+        return NULL;
+    
+    return entry->second;
+}
+
 /**
  * @brief set channel password
  */
@@ -137,14 +147,13 @@ bool Channel::addMember(Client *client)
     return true;
 }
 
-
 void Channel::removeMember(const std::string &nickname)
 {
     MemberTable::iterator member = _members.find(nickname);
 
     if (member == _members.end())
         return;
-    
+
     delete member->second; // should be fine. just remove ChannelMember not Client
     _members.erase(nickname);
 }

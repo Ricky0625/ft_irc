@@ -22,6 +22,7 @@ public:
     size_t getMemberTotal(void) const;
     size_t getMemberLimit(void) const;
     bool isCorrectPassword(const std::string &pass) const;
+    ChannelMember *getMemberUsingNickname(const std::string &nickname);
 
     // setters
     void setPassword(const std::string &password);
