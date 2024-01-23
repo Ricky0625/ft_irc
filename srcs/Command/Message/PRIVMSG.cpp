@@ -40,6 +40,7 @@ void PRIVMSG::execute(int clientFd)
     Client *client = server.getClient(clientFd);
     Client *recipient;
     Channel *targetChannel;
+    ChannelMember *member;
 
     if (client == NULL || !(client->isAuthenticated() && client->isRegistered()))
         return;
@@ -62,20 +63,15 @@ void PRIVMSG::execute(int clientFd)
         recipient = server.getClientByNickname(target);
         targetChannel = server.getChannel(target);
 
-        /**
-         * TODO: refine the way to detect whether it's client or channel
-         */
 
         if (targetChannel)
         {
-            /**
-             * TODO: ERR_CANNOTSENDTOCHAN
-             *
-             * NOTE:
-             * 1. anyone can send a message using PRIVMSG to a channel as long
-             *    as the sender is not on the ban list or the designated channel
-             *    is not a moderated channel.
-             */
+            member = targetChannel->getMember(client);
+            if (member == NULL || (targetChannel->channelModes.hasMode('m') && !(member->memberMode.hasMode('o') || member->memberMode.hasMode('v'))))
+            {
+                client->enqueueBuffer(SEND, ERR_CANNOTSENDTOCHAN(client, targetChannel->getName()));
+                continue;
+            }
             _broadcastMessage(client, targetChannel);
         }
         else if (recipient)
