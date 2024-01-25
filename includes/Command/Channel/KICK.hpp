@@ -18,7 +18,7 @@ private:
     std::vector<std::string> _users;
     std::string _reason;
 
-    void _broadcastKickedMember(Client *member, Channel *channel);
+    void _broadcastKickedMember(Client *source, Client *member, Channel *channel);
 };
 
 #endif

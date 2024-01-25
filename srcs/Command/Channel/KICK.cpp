@@ -87,12 +87,12 @@ void KICK::execute(int clientFd)
             continue;
         }
 
-        _broadcastKickedMember(member->getClientInfo(), targetChannel);
+        _broadcastKickedMember(client, member->getClientInfo(), targetChannel);
         targetChannel->removeMember(member->getClientInfo()->getNickname());
     }
 }
 
-void KICK::_broadcastKickedMember(Client *member, Channel *channel)
+void KICK::_broadcastKickedMember(Client *source, Client *member, Channel *channel)
 {
     Channel::MemberTable members = channel->getMembers();
     Client *target;
@@ -102,6 +102,6 @@ void KICK::_broadcastKickedMember(Client *member, Channel *channel)
     {
         target = it->second->getClientInfo();
         server.subscribeEvent(target->getFd(), POLLOUT);
-        target->enqueueBuffer(SEND, RPL_KICK(target, channel, member->getNickname(), _reason));
+        target->enqueueBuffer(SEND, RPL_KICK(source, channel, member->getNickname(), _reason));
     }
 }
