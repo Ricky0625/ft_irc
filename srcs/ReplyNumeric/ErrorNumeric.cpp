@@ -68,6 +68,12 @@ std::string ERR_NOTONCHANNEL(Client *client, Channel *channel)
     return ChannelSimpleMessage("442", client, channel->getName(), "You're not on that channel");
 }
 
+// 443
+std::string ERR_USERONCHANNEL(Client *client, const std::string &nickname, Channel *channel)
+{
+    return SourceMessage("443", client) + " " + nickname + " " + channel->getName() + ":is already on channel" + CRLF;
+}
+
 // 461
 std::string ERR_NEEDMOREPARAMS(Client *client, const std::string &command)
 {
@@ -95,7 +101,7 @@ std::string ERR_CHANNELISFULL(Client *client, const std::string &channelName)
 // 473
 std::string ERR_INVITEONLYCHAN(Client *client, const std::string &channelName)
 {
-    return ChannelSimpleMessage("471", client, channelName, "Cannot join channel (+i)");
+    return ChannelSimpleMessage("473", client, channelName, "Cannot join channel (+i)");
 }
 
 // 475
