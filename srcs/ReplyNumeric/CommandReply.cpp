@@ -41,3 +41,9 @@ std::string RPL_MODE(Client *client, const std::string &target, const std::strin
 {
     return ClientHeader(client, client->getNickname()) + " MODE " + target + " " + modeChanged + " " + arg + CRLF;
 }
+
+std::string RPL_KICK(Client *client, Channel *channel, const std::string &kickedMember, const std::string &reason)
+{
+    const std::string &channelName = channel->getName();
+    return ClientHeader(client, client->getNickname()) + " KICK " + channelName + " " + kickedMember + (reason.empty() ? "" + std::string(CRLF) : MessageTrailing(reason));
+}

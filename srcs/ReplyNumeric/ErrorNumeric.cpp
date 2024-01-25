@@ -56,6 +56,12 @@ std::string ERR_NICKNAMEINUSE(Client *client, const std::string &newNick)
     return NicknameError("433", client, newNick, "Nickname is already in use");
 }
 
+// 441
+std::string ERR_USERNOTINCHANNEL(Client *client, const std::string &nickname, Channel *channel)
+{
+    return SourceMessage("441", client) + " " + channel->getName() + " " + nickname + ":They are not on that channel" + CRLF;
+}
+
 // 442
 std::string ERR_NOTONCHANNEL(Client *client, Channel *channel)
 {
