@@ -24,7 +24,7 @@ void QUIT::execute(int clientFd)
     Server &server = *_server;
     Client *target = server.getClient(clientFd);
 
-    if (target == NULL || !(target->isAuthenticated() && target->isRegistered()))
+    if (target == NULL)
         return;
 
     _sayGoodbyeToChannels(target); // send quit message to all channels (if the user is in there)
