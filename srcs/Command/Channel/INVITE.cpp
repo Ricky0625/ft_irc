@@ -79,5 +79,5 @@ void INVITE::execute(int clientFd)
     client->enqueueBuffer(SEND, RPL_INVITING(client, _nickname, targetChannel));
     server.subscribeEvent(targetClient->getFd(), POLLOUT);
     targetClient->enqueueBuffer(SEND, RPL_INVITE(client, _nickname, targetChannel));
-    targetChannel->addInvitation(_nickname);
+    targetChannel->addInvitation(targetClient->getFd());
 }

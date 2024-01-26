@@ -176,19 +176,17 @@ ChannelMember *Channel::getMember(Client *target)
     return NULL;
 }
 
-void Channel::addInvitation(const std::string &nickname)
+void Channel::addInvitation(int fd)
 {
-    _invitations.insert(nickname);
-    std::cout << "[Channel] " << nickname << " invited to " << _name << std::endl;
+    _invitations.insert(fd);
 }
 
-void Channel::removeInvitation(const std::string &nickname)
+void Channel::removeInvitation(int fd)
 {
-    _invitations.erase(nickname);
-    std::cout << "[Channel] " << nickname << " removed from " << _name << std::endl;
+    _invitations.erase(fd);
 }
 
-bool Channel::isInvited(const std::string &nickname) const
+bool Channel::isInvited(int fd) const
 {
-    return _invitations.find(nickname) != _invitations.end();
+    return _invitations.find(fd) != _invitations.end();
 }
