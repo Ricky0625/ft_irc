@@ -73,7 +73,10 @@ void NOTICE::execute(int clientFd)
             _broadcastMessage(client, targetChannel);
         }
         else if (recipient)
+        {
+            server.subscribeEvent(recipient->getFd(), POLLOUT);
             recipient->enqueueBuffer(SEND, RPL_MSG(client, recipient->getNickname(), _msg, NOTICE_MSG));
+        }
     }
 }
 
