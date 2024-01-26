@@ -29,6 +29,7 @@ void QUIT::execute(int clientFd)
 
     _sayGoodbyeToChannels(target); // send quit message to all channels (if the user is in there)
     server.removeMemberFromChannels(target->getNickname()); // remove user from channels
+    server.removeClient(clientFd);
 }
 
 void QUIT::_sayGoodbyeToChannels(Client *client)

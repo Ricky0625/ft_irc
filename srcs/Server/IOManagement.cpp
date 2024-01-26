@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 14:42:23 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/26 14:44:40 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:36:31 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,12 @@ void Server::_readRequest(int clientFd)
     if (bytesRead == -1)
     {
         Logger::justLog("recv", &strerror);
-        removeClient(clientFd, RECV_FAILED); // RECV_FAILED
+        _handleClientQuit(clientFd, RECV_FAILED); // RECV_FAILED
         return;
     }
     else if (bytesRead == 0) // client disconnected
     {
-        removeClient(clientFd, DISCONNECTED); // DISCONNECTED
+        _handleClientQuit(clientFd, DISCONNECTED);
         return;
     }
 
@@ -154,4 +154,45 @@ void Server::_sendReply(int clientFd)
     target->clearBuffer(SEND);
     target->enqueueBuffer(SEND, sendBuffer.substr(bytesSent));
     unsubscribeEvent(clientFd, POLLOUT);
+}
+
+std::string Server::getQuitMessage(QuitReason reason)
+{
+    std::string msg = "QUIT";
+
+    switch (reason)
+    {
+    case DISCONNECTED:
+        msg += MessageTrailing("disconnected!");
+        break;
+    case PING_TIMEOUT:
+        msg += MessageTrailing("ping timeout!");
+        break;
+    case ERR_POLLERR:
+        msg += MessageTrailing("an error has occured. POLLERR.");
+        break;
+    case ERR_POLLHUP:
+        msg += MessageTrailing("client hang up. POLLHUP.");
+        break;
+    case ERR_POLLNVAL:
+        msg += MessageTrailing("client socket not initialized properly. POLLHUP.");
+        break;
+    case RECV_FAILED:
+        msg += MessageTrailing("failed to read request.");
+        break;
+    case UNEXPECTED:
+        msg += MessageTrailing("quit unexpectedly.");
+        break;
+    }
+    return msg;
+}
+
+void Server::_handleClientQuit(int clientFd, QuitReason reason)
+{
+    ICommand *command;
+    IRCMessage ircMsg = Parser::parseIRCMessage(getQuitMessage(reason));
+
+    command = _cmdFactory->recognizeCommand(*this, ircMsg);
+    if (command != NULL)
+        command->execute(clientFd);
 }

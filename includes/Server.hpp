@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/26 14:43:43 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:27:44 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ public:
         ERR_POLLHUP,
         ERR_POLLNVAL,
         RECV_FAILED,
+        UNEXPECTED
     } QuitReason;
 
     typedef enum ModeType
@@ -76,7 +77,7 @@ public:
     void removeChannel(const std::string &channelName);
     void removeMemberFromChannels(const std::string &nickname);
 
-    void removeClient(int clientFd, QuitReason reason);
+    void removeClient(int clientFd);
 
     // mode related
     bool isSupportedMode(char mode, ModeType type) const;
@@ -138,6 +139,8 @@ private:
     void _readRequest(int clientFd);
     void _processRequests(int clientFd, Client *target);
     void _sendReply(int clientFd);
+    void _handleClientQuit(int clientFd, QuitReason reason);
+    std::string getQuitMessage(QuitReason reason);
 };
 
 // utils
