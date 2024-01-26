@@ -453,6 +453,11 @@ void Server::removeClient(int clientFd, QuitReason reason)
     ClientTable::iterator client = _clients.find(clientFd);
 
     (void)reason;
+
+    // remove client from invite list in all channels
+    for (ChannelTable::iterator it = _channels.begin(); it != _channels.end(); it++)
+        it->second->removeInvitation(clientFd);
+
     if (client != _clients.end())
     {
         delete client->second;    // clean up the client instance
