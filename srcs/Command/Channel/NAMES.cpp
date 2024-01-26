@@ -19,9 +19,6 @@ void NAMES::initialize(Server &server, const IRCMessage &ircMsg)
         Parser::splitStr(args[0], _channels, ",", INCLUDE_EMPTY);
 }
 
-/**
- * TODO: secret channel mode, invisible user mode
-*/
 void NAMES::execute(int clientFd)
 {
     Server &server = *_server;
@@ -56,11 +53,6 @@ void NAMES::_listAllChannelMembers(Client *client)
 
     for (Server::ChannelTable::iterator it = allChannels.begin(); it != allChannels.end(); it++)
     {
-        /**
-         * TODO:
-         * 1. filter out channels that has secret mode, unless the user is one of the member
-         * 2. filter out all the invisible users in the channel, unless the user is one the of member
-        */
         targetChannel = it->second;
         client->enqueueBuffer(SEND, RPL_NAMREPLY(client, targetChannel));
         client->enqueueBuffer(SEND, RPL_ENDOFNAMES(client, targetChannel->getName()));

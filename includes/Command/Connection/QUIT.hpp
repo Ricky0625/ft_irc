@@ -18,6 +18,7 @@ private:
 
     void _sayGoodbyeToChannels(Client *client);
     void _broadcastMemberQuit(Client *client, Channel *channel);
+    void _sendERROR(Client *client);
 };
 
 #endif

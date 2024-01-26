@@ -47,3 +47,8 @@ std::string RPL_KICK(Client *client, Channel *channel, const std::string &kicked
     const std::string &channelName = channel->getName();
     return ClientHeader(client, client->getNickname()) + " KICK " + channelName + " " + kickedMember + (reason.empty() ? "" + std::string(CRLF) : MessageTrailing(reason));
 }
+
+std::string RPL_ERROR(const std::string &reason)
+{
+    return "ERROR" + MessageTrailing(reason);
+}

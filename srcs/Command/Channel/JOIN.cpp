@@ -63,9 +63,6 @@ void JOIN::execute(int clientFd)
     if (_chanPass.size() != 0 && _chanPass.size() != _chanNames.size())
         return;
 
-    /**
-     * TODO: password protected channel
-     */
     for (size_t i = 0; i < _chanNames.size(); i++)
     {
         const std::string &channelName = _chanNames[i];

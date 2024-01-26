@@ -33,6 +33,7 @@ std::string RPL_QUIT(Client *client, const std::string &reason);
 std::string RPL_MSG(Client *client, const std::string &target, const std::string &msg, MessageType type = PRIVMSG_MSG);
 std::string RPL_MODE(Client *client, const std::string &target, const std::string &modeChanged, const std::string &arg);
 std::string RPL_KICK(Client *client, Channel *channel, const std::string &kickedMember, const std::string &reason);
+std::string RPL_ERROR(const std::string &reason);
 
 // reply numerics
 std::string RPL_WELCOME(Client *client);                                    // 001

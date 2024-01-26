@@ -34,12 +34,6 @@ void LIST::execute(int clientFd)
         return;
     }
 
-    /**
-     * TODO:
-     * - ISUPPORT ELIST
-     * - hide secret channel,
-     */
-
     client->enqueueBuffer(SEND, RPL_LISTSTART(client));
     for (size_t i = 0; i < _channels.size(); i++)
     {

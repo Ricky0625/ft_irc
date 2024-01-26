@@ -64,11 +64,6 @@ void ICommand::queueWelcomeMessage(Client *client, const std::string &upTime)
     client->enqueueBuffer(SEND, RPL_YOURHOST(client));
     client->enqueueBuffer(SEND, RPL_CREATED(client, upTime));
     client->enqueueBuffer(SEND, RPL_MYINFO(client));
-    /**
-     * TODO:
-     * 1. complete RPL_MYINFO
-     * 2. complete RPL_MYINFO
-     */
     queueMOTD(client);
 }
 

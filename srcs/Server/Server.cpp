@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/26 15:35:56 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/26 18:25:38 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,6 @@ Server::Server(const std::string &port, const std::string &password) : _password
 // destructor
 Server::~Server()
 {
-    /**
-     * TODO:
-     * server cleanup
-     */
     for (size_t i = 0; i < _pollList.size(); i++)
     {
         close(_pollList[i].fd);
@@ -63,7 +59,6 @@ bool Server::isClientAuthenticated(int clientFd)
 
 /**
  * @brief Check if a nickname is taken
- * TODO: not yet check if two names are strictly identical
  */
 bool Server::isNicknameTaken(const std::string &newNick) const
 {
