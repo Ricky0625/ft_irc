@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:02:15 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/20 12:15:40 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:43:43 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ private:
     void _sendPing(int clientFd);
     void _sendPingToClients(void);
 
-    // action
+    // i/o management
     int _acceptConnection(int socketFd);
     void _readRequest(int clientFd);
     void _processRequests(int clientFd, Client *target);
