@@ -89,14 +89,14 @@ void JOIN::execute(int clientFd)
         }
 
         // if invite-only mode is enabled
-        // if (targetChannel->channelModes.hasMode('i'))
-        // {
-        //     client->enqueueBuffer(SEND, ERR_INVITEONLYCHAN(client, targetChannel->getName()));
-        //     continue;
-        // }
+        if (targetChannel->channelModes.hasMode('i') && !targetChannel->isInvited(client->getFd()))
+        {
+            client->enqueueBuffer(SEND, ERR_INVITEONLYCHAN(client, targetChannel->getName()));
+            continue;
+        }
 
         // if key mode is enabled
-        if (targetChannel->channelModes.hasMode('k') && targetChannel->isCorrectPassword(channelPass) == false)
+        if (targetChannel->channelModes.hasMode('k') && targetChannel->isCorrectPassword(channelPass) == false && !targetChannel->isInvited(client->getFd()))
         {
             client->enqueueBuffer(SEND, ERR_BAD_CHANNELKEY(client, targetChannel->getName()));
             continue;
@@ -106,6 +106,8 @@ void JOIN::execute(int clientFd)
         {
             _broadcastNewMember(client, targetChannel);
             queueJoinWelcomeMessage(client, targetChannel);
+            if (targetChannel->isInvited(client->getFd()))
+                targetChannel->removeInvitation(client->getFd());
         }
     }
 }

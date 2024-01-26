@@ -175,3 +175,18 @@ ChannelMember *Channel::getMember(Client *target)
     }
     return NULL;
 }
+
+void Channel::addInvitation(int fd)
+{
+    _invitations.insert(fd);
+}
+
+void Channel::removeInvitation(int fd)
+{
+    _invitations.erase(fd);
+}
+
+bool Channel::isInvited(int fd) const
+{
+    return _invitations.find(fd) != _invitations.end();
+}

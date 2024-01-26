@@ -82,6 +82,12 @@ std::string RPL_TOPICWHOTIME(Client *client, Channel *channel)
     return SourceMessage("333", client) + " " + channel->getName() + " " + channel->getTopicSetBy() + " " + channel->getTopicSetAt() + CRLF;
 }
 
+// 341
+std::string RPL_INVITING(Client *client, const std::string &invitedMember, Channel *channel)
+{
+    return SourceMessage("341", client) + " " + invitedMember + " " + channel->getName() + CRLF;
+}
+
 // 353
 std::string RPL_NAMREPLY(Client *client, Channel *channel)
 {
