@@ -19,7 +19,7 @@ CommandFactory::CommandFactory()
     _commands["NAMES"] = new NAMES();
     _commands["LIST"] = new LIST();
     // _commands["INVITE"] = new INVITE();
-    // _commands["KICK"] = new KICK();
+    _commands["KICK"] = new KICK();
 
     // Server queries
     _commands["MODE"] = new MODE();
