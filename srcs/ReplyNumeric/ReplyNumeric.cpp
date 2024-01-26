@@ -17,11 +17,6 @@ std::string RPL_YOURHOST(Client *client)
 // 003
 std::string RPL_CREATED(Client *client, const std::string &upTime)
 {
-    /**
-     * TODO:
-     * 1. Available user modes
-     * 2. Available channel modes
-     */
     std::string createdMsg = "This server was created " + upTime;
     return SimpleMessage("003", client, createdMsg);
 }
@@ -91,9 +86,6 @@ std::string RPL_INVITING(Client *client, const std::string &invitedMember, Chann
 // 353
 std::string RPL_NAMREPLY(Client *client, Channel *channel)
 {
-    /**
-     * TODO: channel symbol '='
-     */
     return SourceMessage("353", client) + " = " + channel->getName() + MessageTrailing(channel->getAllMembersAsString(client->getNickname()));
 }
 

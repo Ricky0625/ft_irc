@@ -31,10 +31,6 @@ void MODE::execute(int clientFd)
     Server &server = *_server;
     Client *client = server.getClient(clientFd);
 
-    /**
-     * TODO: at least handle MODE <target> first.
-     */
-
     if (getArgs().size() < 1)
     {
         client->enqueueBuffer(SEND, ERR_NEEDMOREPARAMS(client, _ircMsg.command));

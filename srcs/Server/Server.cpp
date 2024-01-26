@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/26 14:44:37 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/26 18:55:06 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,6 @@ Server::Server(const std::string &port, const std::string &password) : _password
 // destructor
 Server::~Server()
 {
-    /**
-     * TODO:
-     * server cleanup
-     */
     for (size_t i = 0; i < _pollList.size(); i++)
     {
         close(_pollList[i].fd);
@@ -63,7 +59,6 @@ bool Server::isClientAuthenticated(int clientFd)
 
 /**
  * @brief Check if a nickname is taken
- * TODO: not yet check if two names are strictly identical
  */
 bool Server::isNicknameTaken(const std::string &newNick) const
 {
@@ -355,17 +350,17 @@ void Server::_handleClientEvents(const pollfd &socketInfo)
     else if (socketInfo.revents & POLLERR) // an error has occurred on this socket
     {
         pollEventErrorMessage(POLLERR, socketInfo.fd);
-        removeClient(socketInfo.fd, ERR_POLLERR); // ERR_POLLERR
+        _handleClientQuit(socketInfo.fd, ERR_POLLERR);
     }
     else if (socketInfo.revents & POLLHUP) // the remote side of the connection hung up
     {
         pollEventErrorMessage(POLLHUP, socketInfo.fd);
-        removeClient(socketInfo.fd, ERR_POLLHUP); // ERR_POLLHUP
+        _handleClientQuit(socketInfo.fd, ERR_POLLHUP);
     }
     else if (socketInfo.revents & POLLNVAL) // not sure if this will ever happen. this means that there's something wrong with the socket initialization
     {
         pollEventErrorMessage(POLLNVAL, socketInfo.fd);
-        removeClient(socketInfo.fd, ERR_POLLNVAL); // ERR_POLLNVAL
+        _handleClientQuit(socketInfo.fd, ERR_POLLNVAL);
     }
 }
 
@@ -388,7 +383,7 @@ void Server::_checkClientTimeout(void)
     }
 
     for (std::vector<int>::iterator it = toBeRemoved.begin(); it != toBeRemoved.end(); it++)
-        removeClient(*it, PING_TIMEOUT); // PING_TIMEOUT
+        _handleClientQuit(*it, PING_TIMEOUT); // PING_TIMEOUT
 }
 
 /**
@@ -416,7 +411,7 @@ void Server::_sendPingToClients(void)
 /**
  * @brief Disconnect a client and remove them from the ClientTable.
  */
-void Server::removeClient(int clientFd, QuitReason reason)
+void Server::removeClient(int clientFd)
 {
     ClientTable::iterator client = _clients.find(clientFd);
 

@@ -24,11 +24,13 @@ void QUIT::execute(int clientFd)
     Server &server = *_server;
     Client *target = server.getClient(clientFd);
 
-    if (target == NULL || !(target->isAuthenticated() && target->isRegistered()))
+    if (target == NULL)
         return;
 
     _sayGoodbyeToChannels(target); // send quit message to all channels (if the user is in there)
+    _sendERROR(target);
     server.removeMemberFromChannels(target->getNickname()); // remove user from channels
+    server.removeClient(clientFd);
 }
 
 void QUIT::_sayGoodbyeToChannels(Client *client)
@@ -63,4 +65,17 @@ void QUIT::_broadcastMemberQuit(Client *client, Channel *channel)
         server.subscribeEvent(receiver->getFd(), POLLOUT);
         receiver->enqueueBuffer(SEND, RPL_QUIT(client, _msg));
     }
+}
+
+void QUIT::_sendERROR(Client *client)
+{
+    ssize_t bytesSent;
+    Server &server = *_server;
+    const std::string &msg = RPL_ERROR("Closing link");
+
+    server.subscribeEvent(client->getFd(), POLLOUT);
+    bytesSent = send(client->getFd(), msg.c_str(), msg.size(), 0);
+    if (bytesSent > 0)
+        Display::displayOutgoing(client->getFd(), msg);
+    server.unsubscribeEvent(client->getFd(), POLLOUT);
 }

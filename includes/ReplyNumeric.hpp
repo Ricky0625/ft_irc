@@ -34,6 +34,7 @@ std::string RPL_MSG(Client *client, const std::string &target, const std::string
 std::string RPL_MODE(Client *client, const std::string &target, const std::string &modeChanged, const std::string &arg);
 std::string RPL_KICK(Client *client, Channel *channel, const std::string &kickedMember, const std::string &reason);
 std::string RPL_INVITE(Client *client, const std::string &invitedMember, Channel *channel);
+std::string RPL_ERROR(const std::string &reason);
 
 // reply numerics
 std::string RPL_WELCOME(Client *client);                                    // 001
