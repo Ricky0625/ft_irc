@@ -32,6 +32,12 @@ std::string ERR_NOTEXTTOSEND(Client *client)
     return SourceMessage("412", client) + MessageTrailing("No text to send");
 }
 
+// 421
+std::string ERR_UNKNOWNCOMMAND(Client *client, const std::string &command)
+{
+    return SourceMessage("421", client) + " " + command + MessageTrailing("Unknown command");
+}
+
 // 422
 std::string ERR_NOMOTD(Client *client)
 {

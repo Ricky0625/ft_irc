@@ -106,6 +106,8 @@ void Server::_processRequests(int clientFd, Client *target)
         command = _cmdFactory->recognizeCommand(*this, ircMsg);
         if (command != NULL)
             command->execute(clientFd);
+        else
+            target->enqueueBuffer(SEND, ERR_UNKNOWNCOMMAND(target, ircMsg.command));
 
         readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
     }

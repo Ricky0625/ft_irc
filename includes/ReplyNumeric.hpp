@@ -62,6 +62,7 @@ std::string ERR_CANNOTSENDTOCHAN(Client *client, const std::string &channelName)
 std::string ERR_TOOMANYCHANNELS(Client *client);                                                    // 405
 std::string ERR_NORECIPIENT(Client *client, const std::string &command);                            // 411
 std::string ERR_NOTEXTTOSEND(Client *client);                                                       // 412
+std::string ERR_UNKNOWNCOMMAND(Client *client, const std::string &command);                         // 421
 std::string ERR_NOMOTD(Client *client);                                                             // 422
 std::string ERR_NONICKNAMEGIVEN(Client *client);                                                    // 431
 std::string ERR_ERRONEUSNICKNAME(Client *client, const std::string &newNick);                       // 432
