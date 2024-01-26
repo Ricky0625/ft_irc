@@ -6,7 +6,7 @@
 /*   By: wricky-t <wricky-t@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 13:07:17 by wricky-t          #+#    #+#             */
-/*   Updated: 2024/01/26 18:25:38 by wricky-t         ###   ########.fr       */
+/*   Updated: 2024/01/26 18:55:06 by wricky-t         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -414,6 +414,12 @@ void Server::_sendPingToClients(void)
 void Server::removeClient(int clientFd)
 {
     ClientTable::iterator client = _clients.find(clientFd);
+
+    (void)reason;
+
+    // remove client from invite list in all channels
+    for (ChannelTable::iterator it = _channels.begin(); it != _channels.end(); it++)
+        it->second->removeInvitation(clientFd);
 
     if (client != _clients.end())
     {

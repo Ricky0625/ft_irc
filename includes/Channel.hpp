@@ -37,6 +37,11 @@ public:
     void removeAllMembers(void);
     ChannelMember *getMember(Client *target);
 
+    // invite management
+    void addInvitation(int fd);
+    void removeInvitation(int fd);
+    bool isInvited(int fd) const;
+
     Modes channelModes;
 
 private:
@@ -50,7 +55,7 @@ private:
 
     size_t _memberLimit; // don't rely on the value here to check if the mode is set or not.
 
-    // std::set<std::string> _invitations;
+    std::set<int> _invitations;
 
     MemberTable _members;
 };

@@ -14,7 +14,7 @@
 #include "TOPIC.hpp"
 #include "NAMES.hpp"
 #include "LIST.hpp"
-// #include "INVITE.hpp"
+#include "INVITE.hpp"
 #include "KICK.hpp"
 
 #include "MODE.hpp"
