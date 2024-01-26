@@ -110,6 +110,10 @@ void Server::_processRequests(int clientFd, Client *target)
         readBuffer = readBuffer.substr(crlfPos + strlen(CRLF));
     }
 
+    // if command is quit, return
+    if (command != NULL && command->getCommand() == "QUIT")
+        return;
+
     // subscribe to POLLOUT if send buffer is not empty
     if (target->getBuffer(SEND).empty() == false)
         subscribeEvent(clientFd, POLLOUT);
