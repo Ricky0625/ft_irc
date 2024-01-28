@@ -61,14 +61,7 @@ bool createBindListen(struct addrinfo *addr, int &socketfd)
         return false;
     }
 
-    fcntl(socketfd, F_SETFL, O_NONBLOCK, FD_CLOEXEC); // SET SOCKET TO NON-BLOCKING
-
-    // DELETE THIS ==========
-    int optvalue = 1;
-    if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &optvalue, sizeof(optvalue)) == -1)
-        Logger::exitLog("setsockopt", &strerror);
-    // DELETE THIS ==========
-    
+    fcntl(socketfd, F_SETFL, O_NONBLOCK); // SET SOCKET TO NON-BLOCKING
 
     if (bind(socketfd, addr->ai_addr, addr->ai_addrlen) == -1)
     {
