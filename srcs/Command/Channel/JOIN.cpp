@@ -77,6 +77,8 @@ void JOIN::execute(int clientFd)
         targetChannel = server.getChannel(channelName);
         if (targetChannel == NULL)
             targetChannel = server.addNewChannel(channelName);
+        else if (targetChannel->getMember(client) != NULL)
+            continue;   // already joined
 
         // if client-limit mode is enabled
         if (targetChannel->channelModes.hasMode('l') && targetChannel->getMemberTotal() >= targetChannel->getMemberLimit())
