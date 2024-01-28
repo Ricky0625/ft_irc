@@ -69,7 +69,10 @@ void TOPIC::execute(int clientFd)
 
     // if topic locked mode is enabled
     if (targetChannel->channelModes.hasMode('t') && member->memberMode.hasMode('o') == false)
+    {
+        client->enqueueBuffer(SEND, ERR_CHANOPRIVSNEEDED(client, _channel));
         return;
+    }
 
     // if has message, update TOPIC
     if (_hasMsg)
